@@ -164,8 +164,18 @@ const getUserPermissions = (user) => {
   return getRolePermissions(user.role);
 };
 
-// Executar auto-seed na inicialização
-autoSeed();
+// Função para inicializar dados
+const initializeData = async () => {
+  try {
+    console.log('🌱 Inicializando dados...');
+    autoSeed();
+    console.log('✅ Dados inicializados com sucesso');
+    return true;
+  } catch (error) {
+    console.error('❌ Erro ao inicializar dados:', error);
+    return false;
+  }
+};
 
 module.exports = {
   getLeads,
@@ -180,5 +190,6 @@ module.exports = {
   getAllRolePermissions,
   updateRolePermissions,
   hasUserPermission,
-  getUserPermissions
+  getUserPermissions,
+  initializeData
 };

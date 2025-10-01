@@ -59,6 +59,19 @@
 
           <v-divider class="my-6"></v-divider>
 
+          <!-- Alerta de erro -->
+          <v-alert
+            v-if="showError"
+            type="error"
+            variant="tonal"
+            class="mb-4"
+            closable
+            @click:close="showError = false"
+          >
+            <v-alert-title>Erro no Login</v-alert-title>
+            <p class="mb-0">{{ errorMessage }}</p>
+          </v-alert>
+
           <v-alert
             type="info"
             variant="tonal"
@@ -106,6 +119,8 @@ export default {
     const valid = ref(false)
     const isLoading = ref(false)
     const successDialog = ref(false)
+    const errorMessage = ref('')
+    const showError = ref(false)
 
     const credentials = reactive({
       username: '',
@@ -129,10 +144,12 @@ export default {
             router.push('/admin/leads')
           }, 2000)
         } else {
-          console.error('Erro no login:', result.message)
+          errorMessage.value = result.message || 'Erro ao fazer login'
+          showError.value = true
         }
       } catch (error) {
-        console.error('Erro no login:', error)
+        errorMessage.value = 'Erro de conexão. Tente novamente.'
+        showError.value = true
       } finally {
         isLoading.value = false
       }
@@ -143,6 +160,8 @@ export default {
       valid,
       isLoading,
       successDialog,
+      errorMessage,
+      showError,
       credentials,
       rules,
       login

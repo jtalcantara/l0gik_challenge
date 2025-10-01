@@ -11,6 +11,9 @@ const routes = require('../routes');
 const { HttpResponses } = require('../utils/http-responses');
 const { errorHandler } = require('../middleware/error-handler');
 
+// Importar e executar seeder
+const { initializeData } = require('../database');
+
 const app = express();
 
 // CORS - Configuração mais permissiva para resolver preflight
@@ -64,6 +67,13 @@ app.use('*', (req, res) => {
 
 // Middleware de tratamento de erros (deve ser o último)
 app.use(errorHandler);
+
+// Executar seeder na inicialização
+initializeData().then(() => {
+  console.log('✅ Dados iniciais carregados com sucesso');
+}).catch((error) => {
+  console.error('❌ Erro ao carregar dados iniciais:', error);
+});
 
 // Exportar para Vercel
 module.exports = app;
