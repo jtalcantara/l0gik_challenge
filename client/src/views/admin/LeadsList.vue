@@ -2,48 +2,50 @@
   <v-container fluid>
     <v-row>
       <v-col cols="12">
-        <v-card elevation="4" class="pa-6">
-          <v-card-title class="text-h4 mb-6">
-            <v-icon color="primary" size="large" class="mr-2">mdi-account-group</v-icon>
-            Gestão de Leads
-          </v-card-title>
+        <!-- Título da Página -->
+        <div class="d-flex align-center mb-6">
+          <v-icon color="primary" size="large" class="mr-3">mdi-account-group</v-icon>
+          <h1 class="text-h4">Gestão de Leads</h1>
+        </div>
 
-          <!-- Barra de Ações -->
-          <v-row class="mb-6">
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="searchQuery"
-                label="Buscar por nome ou email"
-                prepend-icon="mdi-magnify"
-                variant="outlined"
-                clearable
-                @input="handleSearch"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" md="6" class="d-flex justify-end align-center">
-              <v-btn
-                color="success"
-                @click="exportLeads('csv')"
-                :loading="isExporting"
-              >
-                <v-icon left>mdi-file-download</v-icon>
-                Exportar CSV
-              </v-btn>
-            </v-col>
-          </v-row>
+        <!-- Barra de Ações -->
+        <v-row class="mb-6">
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="searchQuery"
+              label="Buscar por nome ou email"
+              prepend-icon="mdi-magnify"
+              variant="outlined"
+              clearable
+              @input="handleSearch"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6" class="d-flex justify-end align-center">
+            <v-btn
+              color="primary"
+              variant="outlined"
+              @click="exportLeads('csv')"
+              :loading="isExporting"
+            >
+              <v-icon left>mdi-file-download</v-icon>
+              Exportar CSV
+            </v-btn>
+          </v-col>
+        </v-row>
 
-          <!-- Tabela de Leads -->
-          <v-data-table
-            :headers="headers"
-            :items="leads"
-            :loading="isLoading"
-            :items-per-page="pagination.itemsPerPage"
-            :page="pagination.currentPage"
-            :server-items-length="pagination.totalItems"
-            @update:page="handlePageChange"
-            @update:items-per-page="handleItemsPerPageChange"
-            class="elevation-2"
-          >
+        <!-- Tabela de Leads -->
+        <v-data-table
+          :headers="headers"
+          :items="leads"
+          :loading="isLoading"
+          :items-per-page="pagination.itemsPerPage"
+          :page="pagination.currentPage"
+          :server-items-length="pagination.totalItems"
+          :items-per-page-options="[5, 10, 20, 100]"
+          @update:page="handlePageChange"
+          @update:items-per-page="handleItemsPerPageChange"
+          class="elevation-1"
+        >
             <template v-slot:item.nome="{ item }">
               <div class="d-flex align-center">
                 <v-avatar color="primary" size="32" class="mr-3">
@@ -122,37 +124,28 @@
               <v-btn
                 icon="mdi-eye"
                 size="small"
-                color="info"
+                color="grey-darken-1"
+                variant="text"
                 @click="viewLead(item.id)"
                 class="mr-1"
               ></v-btn>
               <v-btn
                 icon="mdi-pencil"
                 size="small"
-                color="warning"
+                color="grey-darken-1"
+                variant="text"
                 @click="editLead(item.id)"
                 class="mr-1"
               ></v-btn>
               <v-btn
                 icon="mdi-delete"
                 size="small"
-                color="error"
+                color="grey-darken-1"
+                variant="text"
                 @click="deleteLead(item.id)"
               ></v-btn>
             </template>
           </v-data-table>
-
-          <!-- Paginação -->
-          <v-row class="mt-4">
-            <v-col cols="12" class="d-flex justify-center">
-              <v-pagination
-                v-model="pagination.currentPage"
-                :length="pagination.totalPages"
-                @update:model-value="handlePageChange"
-              ></v-pagination>
-            </v-col>
-          </v-row>
-        </v-card>
       </v-col>
     </v-row>
 
@@ -206,13 +199,13 @@ export default {
       { title: 'UTM Source', key: 'tracking.utm_source', sortable: false },
       { title: 'UTM Campaign', key: 'tracking.utm_campaign', sortable: false },
       { title: 'Data de Cadastro', key: 'createdAt', sortable: false },
-      { title: 'Ações', key: 'actions', sortable: false, width: '150px' }
+      { title: 'Ações', key: 'actions', sortable: false, width: '200px' }
     ]
 
     const leads = computed(() => leadsStore.leads)
     const pagination = computed(() => leadsStore.pagination)
 
-    const fetchLeads = async (page = 1, limit = 10, search = '') => {
+    const fetchLeads = async (page = 1, limit = 5, search = '') => {
       isLoading.value = true
       try {
         await leadsStore.fetchLeads(page, limit, search)

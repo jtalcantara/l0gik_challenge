@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { INITIAL_USERS, INITIAL_LEADS } = require('@/seeders/auto-seeder');
 
 // Caminhos dos arquivos de banco de dados
 const LEADS_PATH = path.join(__dirname, '../data/leads.json');
@@ -38,21 +39,28 @@ const writeJsonFile = (filePath, data) => {
   }
 };
 
-// Dados iniciais
-const INITIAL_USERS = [
-  {
-    id: '1',
-    username: 'admin',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    role: 'admin'
-  },
-  {
-    id: '2',
-    username: 'operador',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    role: 'operador'
+// Auto-seed: popular dados iniciais se estiverem vazios
+const autoSeed = () => {
+  // Verificar e popular usuários
+  const users = getUsers();
+  if (users.length === 0) {
+    console.log('🌱 Auto-seeding: Adicionando usuários iniciais...');
+    INITIAL_USERS.forEach(user => {
+      addUser(user);
+    });
+    console.log('✅ Usuários iniciais adicionados');
   }
-];
+
+  // Verificar e popular leads
+  const leads = getLeads();
+  if (leads.length === 0) {
+    console.log('🌱 Auto-seeding: Adicionando leads iniciais...');
+    INITIAL_LEADS.forEach(lead => {
+      addLead(lead);
+    });
+    console.log('✅ Leads iniciais adicionados');
+  }
+};
 
 const INITIAL_PERMISSIONS = {
   admin: {
@@ -117,7 +125,7 @@ const getLead = (leadId) => {
 
 // Funções para usuários
 const getUsers = () => {
-  return readJsonFile(USERS_PATH, INITIAL_USERS);
+  return readJsonFile(USERS_PATH, []);
 };
 
 const getUserByUsername = (username) => {
@@ -155,6 +163,9 @@ const hasUserPermission = (user, permission) => {
 const getUserPermissions = (user) => {
   return getRolePermissions(user.role);
 };
+
+// Executar auto-seed na inicialização
+autoSeed();
 
 module.exports = {
   getLeads,

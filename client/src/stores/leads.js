@@ -9,7 +9,7 @@ export const useLeadsStore = defineStore('leads', {
       currentPage: 1,
       totalPages: 1,
       totalItems: 0,
-      itemsPerPage: 10
+      itemsPerPage: 5
     },
     isLoading: false,
     searchQuery: ''
@@ -28,7 +28,7 @@ export const useLeadsStore = defineStore('leads', {
   },
 
   actions: {
-    async fetchLeads(page = 1, limit = 10, search = '') {
+    async fetchLeads(page = 1, limit = 5, search = '') {
       this.isLoading = true
       try {
         const params = new URLSearchParams({
