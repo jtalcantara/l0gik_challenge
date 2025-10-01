@@ -1,6 +1,6 @@
-const { HttpResponses } = require('@/utils/http-responses');
-const { getRolePermissions } = require('@/database');
-const { verifyToken } = require('@/middleware/auth');
+const { HttpResponses } = require('../utils/http-responses');
+const { getRolePermissions } = require('../database');
+const { verifyToken } = require('../middleware/auth');
 
 
 // Middleware para verificar permissão de leitura

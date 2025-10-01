@@ -1,4 +1,4 @@
-const { HttpResponses } = require('@/utils/http-responses');
+const { HttpResponses } = require('../utils/http-responses');
 
 /**
  * Middleware simples para capturar erros async

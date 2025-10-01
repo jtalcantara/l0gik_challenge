@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { INITIAL_USERS, INITIAL_LEADS } = require('@/seeders/auto-seeder');
+const { INITIAL_USERS, INITIAL_LEADS } = require('../seeders/auto-seeder');
 
 // Caminhos dos arquivos de banco de dados
 const LEADS_PATH = path.join(__dirname, '../data/leads.json');

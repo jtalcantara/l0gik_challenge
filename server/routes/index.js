@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 
 // Importar configurações centralizadas
-const config = require('@/config');
+const config = require('../config');
 
 // Importar rotas específicas
 const leadsRoutes = require('./leads');

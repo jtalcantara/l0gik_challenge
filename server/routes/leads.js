@@ -1,18 +1,18 @@
 const express = require('express');
-const { authenticateToken } = require('@/middleware/auth');
-const { Permissions } = require('@/middleware/permissions');
-const { leadSchema, leadPatchSchema, querySchema, validateSchema, validateQuery } = require('@/schemas/validation');
+const { authenticateToken } = require('../middleware/auth');
+const { Permissions } = require('../middleware/permissions');
+const { leadSchema, leadPatchSchema, querySchema, validateSchema, validateQuery } = require('../schemas/validation');
 const {
   getLeads,
   addLead,
   getLead,
   updateLead,
   deleteLead
-} = require('@/database');
+} = require('../database');
 const { v4: uuidv4 } = require('uuid');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
-const { HttpResponses } = require('@/utils/http-responses');
+const { HttpResponses } = require('../utils/http-responses');
 
 const router = express.Router();
 

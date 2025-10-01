@@ -1,20 +1,15 @@
 // Arquivo específico para Vercel - API Routes
-// Carregar aliases primeiro
-require('../aliases');
-
-process.loadEnvFile();
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
-// Importar configurações centralizadas
-const config = require('@/config');
+// Importar configurações centralizadas (sem aliases)
+const config = require('../config');
 
-// Importar rotas centralizadas
-const routes = require('@/routes');
-const { HttpResponses } = require('@/utils/http-responses');
-const { errorHandler } = require('@/middleware/error-handler');
+// Importar rotas centralizadas (sem aliases)
+const routes = require('../routes');
+const { HttpResponses } = require('../utils/http-responses');
+const { errorHandler } = require('../middleware/error-handler');
 
 const app = express();
 

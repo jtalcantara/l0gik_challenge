@@ -1,12 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { generateToken } = require('@/middleware/auth');
-const { getUserByUsername, addUser } = require('@/database');
-const { HttpResponses } = require('@/utils/http-responses');
-const { loginSchema, registerSchema, validateSchema } = require('@/schemas/validation');
-const { Permissions } = require('@/middleware/permissions');
-const { authenticateToken } = require('@/middleware/auth');
-const config = require('@/config');
+const { generateToken } = require('../middleware/auth');
+const { getUserByUsername, addUser } = require('../database');
+const { HttpResponses } = require('../utils/http-responses');
+const { loginSchema, registerSchema, validateSchema } = require('../schemas/validation');
+const { Permissions } = require('../middleware/permissions');
+const { authenticateToken } = require('../middleware/auth');
+const config = require('../config');
 
 const router = express.Router();
 

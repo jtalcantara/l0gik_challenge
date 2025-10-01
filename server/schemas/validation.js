@@ -1,5 +1,5 @@
 const yup = require('yup');
-const { HttpResponses } = require('@/utils/http-responses');
+const { HttpResponses } = require('../utils/http-responses');
 
 // Schema para login
 const loginSchema = yup.object({

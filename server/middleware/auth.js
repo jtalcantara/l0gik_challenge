@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const { HttpResponses } = require('@/utils/http-responses');
-const config = require('@/config');
+const { HttpResponses } = require('../utils/http-responses');
+const config = require('../config');
 
 // Middleware de autenticação
 const authenticateToken = (req, res, next) => {
