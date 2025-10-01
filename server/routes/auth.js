@@ -40,7 +40,7 @@ router.post('/login', validateSchema(loginSchema), async (req, res) => {
 });
 
 // POST /api/auth/register (apenas para desenvolvimento)
-router.post('/register', validateSchema(registerSchema), requireAdmin, async (req, res) => {
+router.post('/register', validateSchema(registerSchema), authenticateToken, requireAdmin, async (req, res) => {
 
   const { username, password } = req.body;
 
