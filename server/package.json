@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node -r ./aliases.js index.js",
     "dev": "nodemon -r ./aliases.js index.js",
-    "build": "echo 'Build completed'",
     "deploy": "vercel --prod --yes",
     "deploy:preview": "vercel --yes"
   },
