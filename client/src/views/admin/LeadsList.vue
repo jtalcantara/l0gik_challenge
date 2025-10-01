@@ -1,43 +1,59 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12">
-        <!-- Título da Página -->
-        <div class="d-flex align-center mb-6">
-          <v-icon color="primary" size="large" class="mr-3">mdi-account-group</v-icon>
-          <h1 class="text-h4">Gestão de Leads</h1>
-        </div>
+  <div class="leads-page">
+    <!-- Background animado -->
+    <div class="background-animation"></div>
+    
+    <v-container fluid class="pa-6 pa-md-8">
+      <v-row>
+        <v-col cols="12">
+          <!-- Header da Página -->
+          <v-card elevation="8" class="header-card mb-6">
+            <v-card-title class="pa-6">
+              <div class="d-flex align-center">
+                <div>
+                  <h1 class="text-h4 font-weight-light text-grey-darken-3">Gestão de Leads</h1>
+                  <p class="text-body-2 text-grey mb-0">Gerencie e visualize todos os leads do sistema</p>
+                </div>
+              </div>
+            </v-card-title>
+          </v-card>
 
-        <!-- Barra de Ações -->
-        <v-row class="mb-6">
-          <v-col cols="12" md="6">
-            <v-text-field
-              v-model="searchQuery"
-              label="Buscar por nome ou email"
-              prepend-icon="mdi-magnify"
-              variant="outlined"
-              clearable
-              @input="handleSearch"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" md="6" class="d-flex justify-end align-center">
-            <v-btn
-              color="primary"
-              variant="outlined"
-              @click="exportLeads('csv')"
-              :loading="isExporting"
-            >
-              <v-icon left>mdi-file-download</v-icon>
-              Exportar CSV
-            </v-btn>
-          </v-col>
-        </v-row>
+          <!-- Barra de Ações -->
+          <v-card elevation="4" class="actions-card mb-6">
+            <v-card-text class="pa-6">
+              <v-row>
+                <v-col cols="12" md="6" class="mb-4 mb-md-0">
+                  <v-text-field
+                    v-model="searchQuery"
+                    label="Buscar por nome ou email"
+                    prepend-inner-icon="mdi-magnify"
+                    variant="outlined"
+                    clearable
+                    @input="handleSearch"
+                    class="search-field"
+                    color="primary"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6" class="d-flex justify-end align-center">
+                  <v-btn
+                    color="primary"
+                    variant="elevated"
+                    @click="exportLeads('csv')"
+                    :loading="isExporting"
+                    size="large"
+                    class="export-btn"
+                  >
+                    <v-icon left>mdi-file-download</v-icon>
+                    Exportar CSV
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
 
         <!-- Dica de scroll horizontal para mobile -->
         <v-alert
           v-if="isMobile && showScrollHint"
-          type="info"
-          variant="tonal"
           density="compact"
           class="mb-4"
           closable
@@ -48,20 +64,22 @@
         </v-alert>
 
         <!-- Tabela de Leads -->
-        <div class="table-container" ref="tableContainer">
-          <v-data-table
-            :headers="headers"
-            :items="leads"
-            :loading="isLoading"
-            :items-per-page="pagination.itemsPerPage"
-            :page="pagination.currentPage"
-            :server-items-length="pagination.totalItems"
-            :items-per-page-options="[5, 10, 20, 100]"
-            @update:page="handlePageChange"
-            @update:items-per-page="handleItemsPerPageChange"
-            class="elevation-1 responsive-table"
-            :mobile-breakpoint="0"
-          >
+        <v-card elevation="4" class="table-card">
+          <v-card-text class="pa-0">
+            <div class="table-container" ref="tableContainer">
+                <v-data-table
+                  :headers="headers"
+                  :items="leads"
+                  :loading="isLoading"
+                  :items-per-page="pagination.itemsPerPage"
+                  :page="pagination.currentPage"
+                  :server-items-length="pagination.totalItems"
+                  :items-per-page-options="[5, 10, 20, 100]"
+                  @update:page="handlePageChange"
+                  @update:items-per-page="handleItemsPerPageChange"
+                  class="modern-table"
+                  :mobile-breakpoint="0"
+                >
             <template v-slot:item.nome="{ item }">
               <div class="d-flex align-center">
                 <v-avatar color="primary" size="32" class="mr-3">
@@ -162,9 +180,12 @@
               ></v-btn>
             </template>
           </v-data-table>
-        </div>
-      </v-col>
-    </v-row>
+            </div>
+          </v-card-text>
+        </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
     <!-- Dialog de Confirmação de Exclusão -->
     <v-dialog v-model="deleteDialog" max-width="400">
@@ -187,7 +208,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -281,7 +302,6 @@ export default {
         await leadsStore.exportLeads(format)
       } catch (error) {
         console.error('Erro ao exportar leads:', error)
-        // Aqui você pode adicionar uma notificação de erro se desejar
       } finally {
         isExporting.value = false
       }
@@ -450,11 +470,134 @@ export default {
   }
 }
 
-/* Ajustar barra de ações para mobile */
-@media (max-width: 960px) {
-  .d-flex.justify-end {
-    justify-content: flex-start !important;
-    margin-top: 16px;
-  }
+
+/* Design moderno adicional */
+.leads-page {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  z-index: -1;
+  opacity: 1;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.header-card, .actions-card, .table-card {
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.header-card:hover, .actions-card:hover, .table-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.export-btn {
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.search-field :deep(.v-field) {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.search-field :deep(.v-field):hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modern-table {
+  min-width: 100%;
+}
+
+.modern-table :deep(.v-data-table__td),
+.modern-table :deep(.v-data-table__th) {
+  padding: 16px 20px;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.modern-table :deep(.v-data-table__td:last-child),
+.modern-table :deep(.v-data-table__th:last-child) {
+  position: relative;
+  background: transparent;
+  z-index: auto;
+}
+
+.modern-table :deep(.v-data-table__td:last-child) {
+  box-shadow: none;
+}
+
+.modern-table :deep(.v-data-table__th:last-child) {
+  box-shadow: none;
+}
+
+.modern-table :deep(.v-btn) {
+  border-radius: 8px;
+  margin: 0 2px;
+  transition: all 0.3s ease;
+}
+
+.modern-table :deep(.v-btn):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modern-table :deep(.v-chip) {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.v-alert {
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  opacity: 1;
+}
+
+* {
+  transition: all 0.3s ease;
 }
 </style>

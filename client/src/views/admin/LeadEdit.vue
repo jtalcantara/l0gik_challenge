@@ -1,18 +1,29 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12">
-        <v-card elevation="4" class="pa-6">
-          <v-card-title class="text-h4 mb-6">
-            <v-btn
-              icon="mdi-arrow-left"
-              variant="text"
-              @click="$router.push('/admin/leads')"
-              class="mr-2"
-            ></v-btn>
-            <v-icon color="primary" size="large" class="mr-2">mdi-pencil</v-icon>
-            Editar Lead
-          </v-card-title>
+  <div class="lead-edit-page">
+    <!-- Background animado -->
+    <div class="background-animation"></div>
+    
+    <v-container fluid class="pa-4 pa-md-6">
+      <v-row>
+        <v-col cols="12">
+          <!-- Header -->
+          <v-card elevation="8" class="header-card mb-6">
+            <v-card-title class="pa-4 pa-md-6">
+              <div class="d-flex align-center">
+                <v-btn
+                  icon="mdi-arrow-left"
+                  variant="text"
+                  @click="$router.push('/admin/leads')"
+                  class="mr-4 back-btn"
+                  size="large"
+                ></v-btn>
+                <div>
+                  <h1 class="text-h4 font-weight-light text-grey-darken-3">Editar Lead</h1>
+                  <p class="text-body-2 text-grey mb-0">Atualize as informações do lead</p>
+                </div>
+              </div>
+            </v-card-title>
+          </v-card>
 
           <v-row v-if="isLoading" class="justify-center">
             <v-col cols="12" class="text-center">
@@ -21,182 +32,217 @@
             </v-col>
           </v-row>
 
-          <v-form v-else-if="lead" ref="form" v-model="valid" @submit.prevent="updateLead">
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.nome"
-                  label="Nome Completo *"
-                  :rules="[rules.required]"
-                  prepend-icon="mdi-account"
-                  variant="outlined"
-                  required
-                ></v-text-field>
-              </v-col>
-              
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.email"
-                  label="E-mail *"
-                  type="email"
-                  :rules="[rules.required, rules.email]"
-                  prepend-icon="mdi-email"
-                  variant="outlined"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
+          <v-card v-else-if="lead" elevation="4" class="form-card">
+            <v-card-text class="pa-4 pa-md-6">
+              <v-form ref="form" v-model="valid" @submit.prevent="updateLead">
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.nome"
+                      label="Nome Completo *"
+                      :rules="[rules.required]"
+                      prepend-inner-icon="mdi-account-outline"
+                      variant="outlined"
+                      required
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.email"
+                      label="E-mail *"
+                      type="email"
+                      :rules="[rules.required, rules.email]"
+                      prepend-inner-icon="mdi-email-outline"
+                      variant="outlined"
+                      required
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.telefone"
-                  label="Telefone *"
-                  :rules="[rules.required, rules.phone]"
-                  prepend-icon="mdi-phone"
-                  variant="outlined"
-                  placeholder="(11) 99999-9999"
-                  v-mask="'(##) #####-####'"
-                  required
-                ></v-text-field>
-              </v-col>
-              
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.cargo"
-                  label="Cargo *"
-                  :rules="[rules.required]"
-                  prepend-icon="mdi-briefcase"
-                  variant="outlined"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.telefone"
+                      label="Telefone *"
+                      :rules="[rules.required, rules.phone]"
+                      prepend-inner-icon="mdi-phone-outline"
+                      variant="outlined"
+                      placeholder="(11) 99999-9999"
+                      v-mask="'(##) #####-####'"
+                      required
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.cargo"
+                      label="Cargo *"
+                      :rules="[rules.required]"
+                      prepend-inner-icon="mdi-briefcase-outline"
+                      variant="outlined"
+                      required
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.dataNascimento"
-                  label="Data de Nascimento *"
-                  type="date"
-                  :rules="[rules.required, rules.date]"
-                  prepend-icon="mdi-calendar"
-                  variant="outlined"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.dataNascimento"
+                      label="Data de Nascimento *"
+                      type="date"
+                      :rules="[rules.required, rules.date]"
+                      prepend-inner-icon="mdi-calendar-outline"
+                      variant="outlined"
+                      required
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-            <v-row>
-              <v-col cols="12">
-                <v-textarea
-                  v-model="formData.mensagem"
-                  label="Mensagem *"
-                  :rules="[rules.required]"
-                  prepend-icon="mdi-message-text"
-                  variant="outlined"
-                  rows="4"
-                  required
-                ></v-textarea>
-              </v-col>
-            </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-textarea
+                      v-model="formData.mensagem"
+                      label="Mensagem *"
+                      :rules="[rules.required]"
+                      prepend-inner-icon="mdi-message-text-outline"
+                      variant="outlined"
+                      rows="4"
+                      required
+                      class="mb-4"
+                      color="primary"
+                    ></v-textarea>
+                  </v-col>
+                </v-row>
 
-            <!-- Campos de Tracking UTM -->
-            <v-divider class="my-6"></v-divider>
-            <h3 class="text-h6 mb-4">Dados de Tracking</h3>
-            
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.utm_source"
-                  label="UTM Source"
-                  prepend-icon="mdi-chart-line"
-                  variant="outlined"
-                ></v-text-field>
-              </v-col>
-              
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.utm_medium"
-                  label="UTM Medium"
-                  prepend-icon="mdi-chart-line"
-                  variant="outlined"
-                ></v-text-field>
-              </v-col>
-            </v-row>
+                <!-- Campos de Tracking UTM -->
+                <v-divider class="my-6"></v-divider>
+                <h3 class="text-h6 mb-4">Dados de Tracking</h3>
+                
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.utm_source"
+                      label="UTM Source"
+                      prepend-inner-icon="mdi-chart-line"
+                      variant="outlined"
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.utm_medium"
+                      label="UTM Medium"
+                      prepend-inner-icon="mdi-chart-line"
+                      variant="outlined"
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.utm_campaign"
-                  label="UTM Campaign"
-                  prepend-icon="mdi-chart-line"
-                  variant="outlined"
-                ></v-text-field>
-              </v-col>
-              
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.utm_term"
-                  label="UTM Term"
-                  prepend-icon="mdi-chart-line"
-                  variant="outlined"
-                ></v-text-field>
-              </v-col>
-            </v-row>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.utm_campaign"
+                      label="UTM Campaign"
+                      prepend-inner-icon="mdi-chart-line"
+                      variant="outlined"
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.utm_term"
+                      label="UTM Term"
+                      prepend-inner-icon="mdi-chart-line"
+                      variant="outlined"
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.utm_content"
-                  label="UTM Content"
-                  prepend-icon="mdi-chart-line"
-                  variant="outlined"
-                ></v-text-field>
-              </v-col>
-              
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.gclid"
-                  label="GCLID"
-                  prepend-icon="mdi-google"
-                  variant="outlined"
-                ></v-text-field>
-              </v-col>
-            </v-row>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.utm_content"
+                      label="UTM Content"
+                      prepend-inner-icon="mdi-chart-line"
+                      variant="outlined"
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                  
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.gclid"
+                      label="GCLID"
+                      prepend-inner-icon="mdi-google"
+                      variant="outlined"
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="formData.fbclid"
-                  label="FBCLID"
-                  prepend-icon="mdi-facebook"
-                  variant="outlined"
-                ></v-text-field>
-              </v-col>
-            </v-row>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="formData.fbclid"
+                      label="FBCLID"
+                      prepend-inner-icon="mdi-facebook"
+                      variant="outlined"
+                      class="mb-4"
+                      color="primary"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
 
-            <v-row>
-              <v-col cols="12" class="d-flex justify-end">
-                <v-btn
-                  color="grey"
-                  class="mr-2"
-                  @click="$router.push('/admin/leads')"
-                >
-                  Cancelar
-                </v-btn>
-                <v-btn
-                  type="submit"
-                  color="primary"
-                  :loading="isSubmitting"
-                  :disabled="!valid"
-                >
-                  <v-icon left>mdi-content-save</v-icon>
-                  Salvar Alterações
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-form>
+                <v-row>
+                  <v-col cols="12" class="d-flex justify-end">
+                    <v-btn
+                      color="grey"
+                      variant="outlined"
+                      class="mr-4 cancel-btn"
+                      @click="$router.push('/admin/leads')"
+                      size="large"
+                    >
+                      Cancelar
+                    </v-btn>
+                    <v-btn
+                      type="submit"
+                      color="primary"
+                      variant="elevated"
+                      :loading="isSubmitting"
+                      :disabled="!valid"
+                      class="save-btn"
+                      size="large"
+                    >
+                      <v-icon left>mdi-content-save</v-icon>
+                      Salvar Alterações
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-form>
+            </v-card-text>
+          </v-card>
 
           <!-- Lead não encontrado -->
           <v-row v-else class="justify-center">
@@ -211,10 +257,10 @@
               </v-btn>
             </v-col>
           </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -334,11 +380,228 @@ export default {
 </script>
 
 <style scoped>
-.v-card {
-  border-radius: 8px;
+/* Layout principal */
+.lead-edit-page {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
 }
 
-.v-btn {
-  border-radius: 4px;
+/* Background animado */
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  z-index: -1;
+  opacity: 1;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Cards modernos */
+.header-card, .form-card {
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.header-card:hover, .form-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Container do ícone */
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Botão de voltar */
+.back-btn {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Campos de formulário */
+.v-text-field :deep(.v-field) {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.v-text-field :deep(.v-field):hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.v-text-field :deep(.v-field):focus-within {
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.v-text-field :deep(.v-field__prepend-inner) {
+  padding-right: 8px;
+  padding-left: 12px;
+}
+
+.v-text-field :deep(.v-field__prepend-inner .v-icon) {
+  font-size: 18px;
+  color: rgba(102, 126, 234, 0.7);
+}
+
+.v-textarea :deep(.v-field__prepend-inner) {
+  padding-right: 8px;
+  padding-left: 12px;
+}
+
+.v-textarea :deep(.v-field__prepend-inner .v-icon) {
+  font-size: 18px;
+  color: rgba(102, 126, 234, 0.7);
+}
+
+/* Espaçamento entre campos */
+.v-text-field {
+  margin-bottom: 12px;
+}
+
+.v-textarea {
+  margin-bottom: 12px;
+}
+
+/* Reduzir espaçamento das linhas */
+.v-row {
+  margin-bottom: 8px;
+}
+
+/* Espaçamento do divisor */
+.v-divider {
+  margin: 20px 0;
+}
+
+/* Espaçamento dos títulos */
+h3 {
+  margin-bottom: 16px;
+}
+
+/* Botões de ação */
+.cancel-btn {
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.save-btn {
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .lead-edit-page {
+    padding: 0 16px;
+  }
+  
+  .header-card, .form-card {
+    margin: 0 8px;
+  }
+  
+  .icon-container {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .d-flex.justify-end {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .cancel-btn, .save-btn {
+    width: 100%;
+  }
+  
+  /* Reduzir espaçamento vertical em mobile */
+  .v-text-field, .v-textarea {
+    margin-bottom: 12px;
+  }
+  
+  .v-row {
+    margin-bottom: 8px;
+  }
+  
+  .v-divider {
+    margin: 16px 0;
+  }
+  
+  h3 {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lead-edit-page {
+    padding: 0 12px;
+  }
+  
+  .header-card, .form-card {
+    margin: 0 4px;
+    padding: 16px;
+  }
+  
+  .v-text-field, .v-textarea {
+    margin-bottom: 8px;
+  }
+  
+  .v-row {
+    margin-bottom: 4px;
+  }
+  
+  .v-divider {
+    margin: 12px 0;
+  }
+  
+  h3 {
+    margin-bottom: 12px;
+  }
+}
+
+/* Animações suaves */
+* {
+  transition: all 0.3s ease;
 }
 </style>

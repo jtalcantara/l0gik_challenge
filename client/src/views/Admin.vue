@@ -1,98 +1,119 @@
 <template>
-  <v-container fluid class="pa-0 full-height">
-    <v-row no-gutters class="login-section full-height">
-      <!-- Título e descrição no topo -->
-      <v-col cols="12" class="pa-4">
-        <div class="text-center mb-8">
-          <h1 class="text-h3 font-weight-bold mb-4 text-white">
-            Painel Administrativo
-          </h1>
-          <p class="text-h6 text-white mb-6">
-            Acesse o sistema para gerenciar leads e visualizar relatórios
-          </p>
-          <v-icon size="120" color="white" class="mb-4">mdi-shield-account</v-icon>
-        </div>
-      </v-col>
-      
-      <!-- Formulário de login centralizado -->
-      <v-col cols="12" class="d-flex justify-center pa-4">
-        <div class="login-container">
-        <v-card elevation="8" class="pa-6">
-          <v-card-title class="text-h4 text-center mb-6">
-            <v-icon color="primary" size="large" class="mr-2">mdi-login</v-icon>
-            Login
-          </v-card-title>
-
-          <v-form ref="form" v-model="valid" @submit.prevent="login">
-            <v-text-field
-              v-model="credentials.username"
-              label="Username"
-              :rules="[rules.required]"
-              prepend-icon="mdi-account"
-              variant="outlined"
-              required
-            ></v-text-field>
-
-            <v-text-field
-              v-model="credentials.password"
-              label="Senha"
-              type="password"
-              :rules="[rules.required]"
-              prepend-icon="mdi-lock"
-              variant="outlined"
-              required
-            ></v-text-field>
-
-            <v-btn
-              type="submit"
-              color="primary"
-              size="large"
-              block
-              :loading="isLoading"
-              :disabled="!valid"
-              class="text-h6 py-3"
-            >
-              <v-icon left>mdi-login</v-icon>
-              Entrar
-            </v-btn>
-          </v-form>
-
-          <v-divider class="my-6"></v-divider>
-
-          <!-- Alerta de erro -->
-          <v-alert
-            v-if="showError"
-            type="error"
-            variant="tonal"
-            class="mb-4"
-            closable
-            @click:close="showError = false"
-          >
-            <v-alert-title>Erro no Login</v-alert-title>
-            <p class="mb-0">{{ errorMessage }}</p>
-          </v-alert>
-
-          <v-alert
-            type="info"
-            variant="tonal"
-            class="mb-4"
-          >
-            <v-alert-title>Credenciais de Teste</v-alert-title>
-            <p class="mb-0">
-              <strong>Username:</strong> admin<br>
-              <strong>Senha:</strong> password
+  <div class="login-page">
+    <!-- Background com gradiente animado -->
+    <div class="background-animation"></div>
+    
+    <!-- Conteúdo principal -->
+    <v-container fluid class="pa-0 full-height">
+      <v-row no-gutters class="login-section full-height">
+        <!-- Logo e título -->
+        <v-col cols="12" class="d-flex align-center justify-center pa-6">
+          <div class="text-center">
+            <div class="logo-container mb-4">
+              <v-icon size="80" color="white" class="logo-icon">mdi-shield-account</v-icon>
+            </div>
+            <h1 class="text-h3 font-weight-light text-white mb-2">
+              Challenge L0gik
+            </h1>
+            <p class="text-h6 text-white opacity-90">
+              Sistema de Gestão de Leads
             </p>
-            
-            <p class="mb-0">
-              <strong>Username:</strong> operador<br>
-              <strong>Senha:</strong> password
-            </p>
-          </v-alert>
+          </div>
+        </v-col>
+        
+        <!-- Card de login -->
+        <v-col cols="12" class="d-flex justify-center pa-6">
+          <div class="login-container">
+            <v-card elevation="24" class="login-card">
+              <v-card-title class="text-center pa-6 pb-4">
+                <div class="login-header">
+                  <v-icon color="primary" size="32" class="mb-2">mdi-login-variant</v-icon>
+                  <h2 class="text-h5 font-weight-medium text-grey-darken-3">Acesso ao Sistema</h2>
+                </div>
+              </v-card-title>
 
-        </v-card>
-        </div>
-      </v-col>
-    </v-row>
+              <v-card-text class="pa-6 pt-0">
+                <v-form ref="form" v-model="valid" @submit.prevent="login">
+                  <v-text-field
+                    v-model="credentials.username"
+                    label="Username"
+                    :rules="[rules.required]"
+                    prepend-inner-icon="mdi-account-outline"
+                    variant="outlined"
+                    class="mb-4"
+                    required
+                    color="primary"
+                  ></v-text-field>
+
+                  <v-text-field
+                    v-model="credentials.password"
+                    label="Senha"
+                    type="password"
+                    :rules="[rules.required]"
+                    prepend-inner-icon="mdi-lock-outline"
+                    variant="outlined"
+                    class="mb-6"
+                    required
+                    color="primary"
+                  ></v-text-field>
+
+                  <v-btn
+                    type="submit"
+                    color="primary"
+                    size="large"
+                    block
+                    :loading="isLoading"
+                    :disabled="!valid"
+                    class="login-btn"
+                    elevation="2"
+                  >
+                    <v-icon left>mdi-login</v-icon>
+                    Entrar no Sistema
+                  </v-btn>
+                </v-form>
+              </v-card-text>
+
+              <!-- Alerta de erro -->
+              <v-card-text v-if="showError" class="pa-6 pt-0">
+                <v-alert
+                  type="error"
+                  variant="tonal"
+                  class="mb-4"
+                  closable
+                  @click:close="showError = false"
+                >
+                  <v-alert-title>Erro no Login</v-alert-title>
+                  <p class="mb-0">{{ errorMessage }}</p>
+                </v-alert>
+              </v-card-text>
+
+              <!-- Credenciais de teste -->
+              <v-card-text class="pa-6 pt-0">
+                <v-alert
+                  type="info"
+                  variant="tonal"
+                  class="mb-0"
+                >
+                  <v-alert-title class="text-body-2">Credenciais de Teste</v-alert-title>
+                  <div class="mt-2">
+                    <div class="d-flex justify-space-between mb-1">
+                      <span class="text-caption">Admin:</span>
+                      <span class="text-caption font-weight-medium">admin / password</span>
+                    </div>
+                    <div class="d-flex justify-space-between">
+                      <span class="text-caption">Operador:</span>
+                      <span class="text-caption font-weight-medium">operador / password</span>
+                    </div>
+                  </div>
+                </v-alert>
+              </v-card-text>
+            </v-card>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
+    
 
     <!-- Success Dialog -->
     <v-dialog v-model="successDialog" max-width="500">
@@ -107,7 +128,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-  </v-container>
 </template>
 
 <script>
@@ -176,9 +196,44 @@ export default {
 </script>
 
 <style scoped>
-.login-section {
-  background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);
+/* Layout principal */
+.login-page {
+  position: relative;
   min-height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* Background animado */
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  z-index: -1;
+  opacity: 1;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Seção de login */
+.login-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .full-height {
@@ -186,27 +241,145 @@ export default {
   min-height: 100vh;
 }
 
-/* Container do login centralizado */
+/* Container do login */
 .login-container {
-  max-width: 500px;
+  max-width: 420px;
   width: 100%;
+  margin: 0 auto;
 }
 
-.v-card {
-  border-radius: 16px;
+/* Card de login */
+.login-card {
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
-.v-btn {
-  border-radius: 8px;
+.login-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Garantir que o login ocupe toda a tela quando isolado */
+/* Header do login */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Logo */
+.logo-container {
+  position: relative;
+}
+
+.logo-icon {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Botão de login */
+.login-btn {
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Campos de texto */
+.v-text-field {
+  margin-bottom: 16px;
+}
+
+.v-text-field :deep(.v-field) {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.v-text-field :deep(.v-field):hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Alertas */
+.v-alert {
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .login-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+  
+  .login-card {
+    margin: 0 10px;
+  }
+  
+  .logo-icon {
+    font-size: 60px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 0 16px;
+  }
+  
+  .login-card {
+    margin: 0 5px;
+  }
+}
+
+/* Garantir que o login ocupe toda a tela */
 .v-application {
   height: 100vh;
 }
 
-/* Remover margens e padding padrão quando isolado */
 .v-main {
   padding: 0 !important;
+}
+
+/* Melhorias gerais */
+.v-card-title {
+  padding-bottom: 0;
+}
+
+.v-card-text {
+  padding-top: 0;
+}
+
+/* Efeitos de foco */
+.v-text-field:focus-within :deep(.v-field) {
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+/* Animações suaves */
+* {
+  transition: all 0.3s ease;
 }
 </style>
