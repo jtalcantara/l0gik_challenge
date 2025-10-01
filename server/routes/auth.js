@@ -4,7 +4,7 @@ const { generateToken } = require('@/middleware/auth');
 const { getUserByUsername, addUser } = require('@/database');
 const { HttpResponses } = require('@/utils/http-responses');
 const { loginSchema, registerSchema, validateSchema } = require('@/schemas/validation');
-const { requireAdmin } = require('@/middleware/permissions');
+const { Permissions } = require('@/middleware/permissions');
 const { authenticateToken } = require('@/middleware/auth');
 const config = require('@/config');
 
@@ -40,7 +40,7 @@ router.post('/login', validateSchema(loginSchema), async (req, res) => {
 });
 
 // POST /api/auth/register (apenas para desenvolvimento)
-router.post('/register', validateSchema(registerSchema), authenticateToken, requireAdmin, async (req, res) => {
+router.post('/register', validateSchema(registerSchema), authenticateToken, Permissions.requireAdmin, async (req, res) => {
 
   const { username, password } = req.body;
 

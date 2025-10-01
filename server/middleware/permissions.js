@@ -73,12 +73,12 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-const Permissions = {
-  checkPermissionRead,
-  checkPermissionWrite,
-  checkPermissionDelete,
-  checkPermissionExport,
-  requireAdmin
+module.exports = {
+  Permissions: {
+    checkPermissionRead,
+    checkPermissionWrite,
+    checkPermissionDelete,
+    checkPermissionExport,
+    requireAdmin
+  }
 };
-
-module.exports = Permissions;

@@ -110,7 +110,7 @@ const deleteLead = (leadId) => {
   return deletedLead;
 };
 
-const getLeadById = (leadId) => {
+const getLead = (leadId) => {
   const db = readJsonFile(LEADS_PATH, { leads: [] });
   return db.leads.find(lead => lead.id === leadId);
 };
@@ -162,7 +162,7 @@ module.exports = {
   addLead,
   updateLead,
   deleteLead,
-  getLeadById,
+  getLead,
   getUserByUsername,
   addUser,
   getRolePermissions,
