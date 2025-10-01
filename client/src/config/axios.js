@@ -7,9 +7,6 @@ axios.defaults.baseURL = getApiUrl()
 // Configurar timeout
 axios.defaults.timeout = 10000 // 10 segundos
 
-// Configurar credenciais para CORS
-axios.defaults.withCredentials = true
-
 // Interceptor para requisições
 axios.interceptors.request.use(
   (config) => {

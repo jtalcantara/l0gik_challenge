@@ -13,20 +13,23 @@ const { errorHandler } = require('../middleware/error-handler');
 
 const app = express();
 
-// CORS - Configuração para frontend
+// CORS - Configuração mais permissiva para resolver preflight
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://l0gik-challenge-client.vercel.app',
-    'https://l0gik-challenge-client-git-main-jtalcantaras-projects.vercel.app',
-    'https://l0gik-challenge-iupdzwsjs-jtalcantaras-projects.vercel.app'
-  ],
-  credentials: true,
+  origin: '*', // Permite qualquer origem
+  credentials: false, // Sem credenciais para evitar preflight
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Authorization'],
+  optionsSuccessStatus: 200 // Para navegadores legados
 }));
+
+// Middleware para lidar com preflight OPTIONS
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  res.status(200).end();
+});
 
 // Middlewares
 app.use(helmet());
