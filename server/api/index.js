@@ -13,10 +13,19 @@ const { errorHandler } = require('../middleware/error-handler');
 
 const app = express();
 
-// CORS - Configuração simples
+// CORS - Configuração para frontend
 app.use(cors({
-  origin: '*',
-  credentials: false
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://l0gik-challenge-client.vercel.app',
+    'https://l0gik-challenge-client-git-main-jtalcantaras-projects.vercel.app',
+    'https://l0gik-challenge-iupdzwsjs-jtalcantaras-projects.vercel.app'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Authorization']
 }));
 
 // Middlewares
