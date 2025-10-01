@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import axios from '@/config/axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
     async login(credentials) {
       this.isLoading = true
       try {
-        const response = await axios.post('/api/auth/login', credentials)
+        const response = await axios.post(`/auth/login`, credentials)
         
         if (response.data.success) {
           this.token = response.data.data.token
@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', {
       
       try {
         axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-        const response = await axios.get('/api/auth/verify')
+        const response = await axios.get(`/auth/verify`)
         return response.data.success
       } catch (error) {
         this.logout()

@@ -100,7 +100,7 @@
         <v-row>
           <v-col cols="12">
             <p class="mb-0">
-              © 2024 Challenge L0gik - Sistema de Gestão de Leads
+              © 2025 Challenge L0gik - Jonathan Alcantara - Sistema de Gestão de Leads
             </p>
           </v-col>
         </v-row>

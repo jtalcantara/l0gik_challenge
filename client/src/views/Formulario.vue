@@ -1,33 +1,60 @@
 <template>
-  <v-container fluid class="pa-0">
-    <!-- Hero Section -->
-    <v-row no-gutters class="hero-section">
-      <v-col cols="12" md="6" class="d-flex align-center justify-center pa-8">
-        <div class="text-center">
-          <h1 class="text-h3 font-weight-bold mb-4 text-white">
-            Cadastre-se e Transforme seu Negócio
-          </h1>
-          <p class="text-h6 text-white mb-6">
-            Preencha o formulário abaixo e receba informações exclusivas sobre nossos produtos e serviços.
-          </p>
-          <v-chip
-            v-for="benefit in benefits"
-            :key="benefit"
-            color="white"
-            variant="outlined"
-            class="ma-1"
-          >
-            {{ benefit }}
-          </v-chip>
-        </div>
-      </v-col>
-      
-      <v-col cols="12" md="6" class="pa-8">
-        <v-card elevation="8" class="pa-6">
-          <v-card-title class="text-h4 text-center mb-6">
-            <v-icon color="primary" size="large" class="mr-2">mdi-account-plus</v-icon>
-            Cadastro de Lead
-          </v-card-title>
+  <v-app>
+    <!-- Header -->
+    <v-app-bar color="#333" dark elevation="0" height="80">
+      <v-container>
+        <v-row align="center">
+          <v-col cols="auto">
+            <v-icon size="32" class="mr-3">mdi-rocket-launch</v-icon>
+            <span class="text-h5 font-weight-bold">Challenge L0gik</span>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="auto">
+            <v-btn color="white" variant="outlined" size="small">
+              <v-icon left>mdi-information</v-icon>
+              Sobre
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-app-bar>
+
+    <!-- Main Content -->
+    <v-main>
+      <v-container fluid class="pa-0">
+        <!-- Hero Section -->
+        <v-row no-gutters class="hero-section">
+          <v-col cols="12" md="6" class="d-flex align-center justify-center pa-8">
+            <div class="text-center">
+              <v-icon size="80" color="white" class="mb-4">mdi-account-group</v-icon>
+              <h1 class="text-h3 font-weight-bold mb-4 text-white">
+                Cadastre-se e Transforme seu Negócio
+              </h1>
+              <p class="text-h6 text-white mb-6">
+                Preencha o formulário abaixo e receba informações exclusivas sobre nossos produtos e serviços.
+              </p>
+              <v-row justify="center">
+                <v-col v-for="benefit in benefits" :key="benefit" cols="auto">
+                  <v-chip
+                    color="white"
+                    variant="outlined"
+                    size="large"
+                    class="ma-1"
+                  >
+                    <v-icon left>mdi-check</v-icon>
+                    {{ benefit }}
+                  </v-chip>
+                </v-col>
+              </v-row>
+            </div>
+          </v-col>
+          
+          <v-col cols="12" md="6" class="pa-8">
+            <v-card elevation="12" class="pa-8" rounded="xl">
+              <v-card-title class="text-h4 text-center mb-6 pa-0">
+                <v-icon color="#333" size="large" class="mr-3">mdi-account-plus</v-icon>
+                <span class="text-h4 font-weight-bold">Cadastro de Lead</span>
+              </v-card-title>
 
           <!-- Alert de erro -->
           <v-alert
@@ -39,6 +66,37 @@
             @click:close="errorMessage = ''"
           >
             {{ errorMessage }}
+          </v-alert>
+
+          <!-- Debug: Mostrar parâmetros UTM capturados -->
+          <v-alert
+            v-if="hasUTMParameters"
+            type="info"
+            variant="tonal"
+            class="mb-4"
+            closable
+          >
+            <template #title>
+              <v-icon class="mr-2">mdi-tag-multiple</v-icon>
+              Parâmetros de Tracking Capturados
+            </template>
+            <div class="mt-2">
+              <v-chip v-if="formData.utm_source" color="primary" size="small" class="ma-1">
+                Source: {{ formData.utm_source }}
+              </v-chip>
+              <v-chip v-if="formData.utm_medium" color="secondary" size="small" class="ma-1">
+                Medium: {{ formData.utm_medium }}
+              </v-chip>
+              <v-chip v-if="formData.utm_campaign" color="success" size="small" class="ma-1">
+                Campaign: {{ formData.utm_campaign }}
+              </v-chip>
+              <v-chip v-if="formData.gclid" color="warning" size="small" class="ma-1">
+                GCLID: {{ formData.gclid }}
+              </v-chip>
+              <v-chip v-if="formData.fbclid" color="info" size="small" class="ma-1">
+                FBCLID: {{ formData.fbclid }}
+              </v-chip>
+            </div>
           </v-alert>
 
           <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
@@ -79,11 +137,11 @@
                   :rules="[rules.required, rules.phone]"
                   prepend-icon="mdi-phone"
                   variant="outlined"
-                  placeholder="(11) 99999-9999"
-                  v-mask="'(##) #####-####'"
+                  placeholder="(11) 99999-9999 ou (11) 3333-4444"
                   required
                   :error-messages="fieldErrors.telefone"
                   @blur="validateField('telefone')"
+                  @input="formatPhone"
                 ></v-text-field>
               </v-col>
               
@@ -174,8 +232,81 @@
                 </v-btn>
               </v-col>
             </v-row>
+
           </v-form>
         </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Seção de Testes UTM (apenas em desenvolvimento) -->
+    <v-row v-if="isDev" no-gutters>
+      <v-col cols="12" class="pa-8">
+        <v-container>
+          <v-card elevation="4">
+            <v-card-title class="text-center pa-6">
+              <v-icon color="info" size="large" class="mr-3">mdi-test-tube</v-icon>
+              <span class="text-h5 font-weight-bold">Links de Teste UTM</span>
+            </v-card-title>
+            
+            <v-card-text class="pa-6">
+              <v-alert
+                type="info"
+                variant="tonal"
+                class="mb-6"
+                closable
+              >
+                <template #title>
+                  Como usar testar os parâmetros UTM?
+                </template>
+                <p class="mt-2 mb-0">
+                  Clique nos botões abaixo para testar diferentes cenários de tracking UTM. 
+                  Cada link simula uma fonte de tráfego diferente com parâmetros específicos.
+                </p>
+              </v-alert>
+
+              <v-row>
+                <v-col v-for="(url, name) in testLinks" :key="name" cols="12" sm="6" md="4" lg="3">
+                  <v-card
+                    :href="url"
+                    target="_blank"
+                    elevation="2"
+                    hover
+                    class="text-decoration-none"
+                  >
+                    <v-card-text class="pa-4 text-center">
+                      <v-icon 
+                        :color="getTestIconColor(name)" 
+                        size="32" 
+                        class="mb-3"
+                      >
+                        {{ getTestIcon(name) }}
+                      </v-icon>
+                      <h6 class="text-subtitle-1 font-weight-bold mb-2">
+                        {{ getTestTitle(name) }}
+                      </h6>
+                      <p class="text-caption text-medium-emphasis mb-3">
+                        {{ getTestDescription(name) }}
+                      </p>
+                      <v-btn
+                        color="primary"
+                        variant="outlined"
+                        size="small"
+                        block
+                      >
+                        <v-icon left size="small">mdi-open-in-new</v-icon>
+                        Testar
+                      </v-btn>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+
+              <v-divider class="my-6"></v-divider>
+              
+             
+            </v-card-text>
+          </v-card>
+        </v-container>
       </v-col>
     </v-row>
 
@@ -259,9 +390,9 @@ export default {
       },
       phone: (value) => {
         if (!value) return true
-        // Validação para telefone brasileiro
-        const pattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/
-        return pattern.test(value) || 'Telefone deve estar no formato (XX) XXXXX-XXXX'
+        // Validação para telefone brasileiro (fixo ou celular)
+        const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/
+        return phonePattern.test(value) || 'Telefone deve estar no formato (XX) XXXXX-XXXX ou (XX) XXXX-XXXX'
       },
       date: (value) => {
         if (!value) return true
@@ -289,6 +420,40 @@ export default {
       formData.utm_content = urlParams.get('utm_content') || ''
       formData.gclid = urlParams.get('gclid') || ''
       formData.fbclid = urlParams.get('fbclid') || ''
+      
+      // Debug: mostrar parâmetros capturados
+      console.log('🔍 Parâmetros UTM capturados:', {
+        utm_source: formData.utm_source,
+        utm_medium: formData.utm_medium,
+        utm_campaign: formData.utm_campaign,
+        utm_term: formData.utm_term,
+        utm_content: formData.utm_content,
+        gclid: formData.gclid,
+        fbclid: formData.fbclid
+      })
+    }
+
+    const formatPhone = (event) => {
+      let value = event.target.value
+      
+      // Remove todos os caracteres não numéricos
+      const numbers = value.replace(/\D/g, '')
+      
+      // Limita a 11 dígitos (DDD + 9 dígitos)
+      const limitedNumbers = numbers.slice(0, 11)
+      
+      // Aplica a máscara baseada no número de dígitos
+      if (limitedNumbers.length <= 2) {
+        formData.telefone = limitedNumbers
+      } else if (limitedNumbers.length <= 6) {
+        formData.telefone = `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2)}`
+      } else if (limitedNumbers.length <= 10) {
+        // Telefone fixo: (XX) XXXX-XXXX
+        formData.telefone = `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 6)}-${limitedNumbers.slice(6)}`
+      } else {
+        // Celular: (XX) 9XXXX-XXXX
+        formData.telefone = `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 7)}-${limitedNumbers.slice(7)}`
+      }
     }
 
     const validateField = (fieldName) => {
@@ -376,8 +541,120 @@ export default {
       }
     }
 
+    // Computed para verificar se há parâmetros UTM
+    const hasUTMParameters = computed(() => {
+      return formData.utm_source || 
+             formData.utm_medium || 
+             formData.utm_campaign || 
+             formData.utm_term || 
+             formData.utm_content || 
+             formData.gclid || 
+             formData.fbclid
+    })
+
+    // Links de teste com diferentes UTM
+    const testLinks = {
+      googleAds: 'http://localhost:5173/formulario?utm_source=google&utm_medium=cpc&utm_campaign=google_ads&utm_term=desenvolvimento&utm_content=banner&gclid=abc123456',
+      facebookAds: 'http://localhost:5173/formulario?utm_source=facebook&utm_medium=social&utm_campaign=fb_ads&utm_content=video&fbclid=xyz789012',
+      emailMarketing: 'http://localhost:5173/formulario?utm_source=newsletter&utm_medium=email&utm_campaign=promocao&utm_content=cta_button',
+      instagram: 'http://localhost:5173/formulario?utm_source=instagram&utm_medium=social&utm_campaign=stories&utm_content=carousel',
+      youtube: 'http://localhost:5173/formulario?utm_source=youtube&utm_medium=video&utm_campaign=tutorial&utm_term=vue&utm_content=thumbnail',
+      linkedin: 'http://localhost:5173/formulario?utm_source=linkedin&utm_medium=social&utm_campaign=professional&utm_content=post',
+      twitter: 'http://localhost:5173/formulario?utm_source=twitter&utm_medium=social&utm_campaign=thread&utm_content=retweet',
+      organic: 'http://localhost:5173/formulario?utm_source=google&utm_medium=organic&utm_campaign=seo&utm_term=vue+js',
+      direct: 'http://localhost:5173/formulario?utm_source=direct&utm_medium=none&utm_campaign=bookmark',
+      referral: 'http://localhost:5173/formulario?utm_source=github&utm_medium=referral&utm_campaign=opensource'
+    }
+
+    const displayTestLinks = () => {
+      console.log('🔗 LINKS DE TESTE COM UTM PARAMETERS')
+      console.log('=====================================')
+      console.log('')
+      
+      Object.entries(testLinks).forEach(([name, url]) => {
+        console.log(`📌 ${name.toUpperCase()}:`)
+        console.log(`   ${url}`)
+        console.log('')
+      })
+      
+      console.log('💡 COMO USAR:')
+      console.log('1. Copie qualquer link acima')
+      console.log('2. Cole no navegador')
+      console.log('3. Veja os parâmetros UTM sendo capturados')
+      console.log('4. Preencha o formulário e envie')
+      console.log('5. Verifique o lead criado com tracking preenchido')
+      console.log('')
+      console.log('🎯 DICA: Use Ctrl+Click para abrir em nova aba')
+    }
+
+    // Funções auxiliares para os cards de teste
+    const getTestIcon = (name) => {
+      const icons = {
+        googleAds: 'mdi-google',
+        facebookAds: 'mdi-facebook',
+        emailMarketing: 'mdi-email',
+        instagram: 'mdi-instagram',
+        youtube: 'mdi-youtube',
+        linkedin: 'mdi-linkedin',
+        twitter: 'mdi-twitter',
+        organic: 'mdi-magnify',
+        direct: 'mdi-bookmark',
+        referral: 'mdi-github'
+      }
+      return icons[name] || 'mdi-link'
+    }
+
+    const getTestIconColor = (name) => {
+      const colors = {
+        googleAds: 'red',
+        facebookAds: 'blue',
+        emailMarketing: 'orange',
+        instagram: 'pink',
+        youtube: 'red',
+        linkedin: 'blue',
+        twitter: 'light-blue',
+        organic: 'green',
+        direct: 'grey',
+        referral: 'purple'
+      }
+      return colors[name] || 'primary'
+    }
+
+    const getTestTitle = (name) => {
+      const titles = {
+        googleAds: 'Google Ads',
+        facebookAds: 'Facebook Ads',
+        emailMarketing: 'Email Marketing',
+        instagram: 'Instagram',
+        youtube: 'YouTube',
+        linkedin: 'LinkedIn',
+        twitter: 'Twitter',
+        organic: 'SEO/Organic',
+        direct: 'Acesso Direto',
+        referral: 'Referral'
+      }
+      return titles[name] || name
+    }
+
+    const getTestDescription = (name) => {
+      const descriptions = {
+        googleAds: 'Campanhas pagas no Google com GCLID',
+        facebookAds: 'Anúncios no Facebook com FBCLID',
+        emailMarketing: 'Newsletters e campanhas por email',
+        instagram: 'Stories e posts no Instagram',
+        youtube: 'Vídeos e anúncios no YouTube',
+        linkedin: 'Posts profissionais no LinkedIn',
+        twitter: 'Threads e posts no Twitter',
+        organic: 'Tráfego orgânico do Google',
+        direct: 'Acesso direto sem referrer',
+        referral: 'Tráfego de referência'
+      }
+      return descriptions[name] || 'Teste de tracking'
+    }
+
     onMounted(() => {
       extractUTMParameters()
+      displayTestLinks()
     })
 
     return {
@@ -392,7 +669,15 @@ export default {
       rules,
       submitForm,
       validateField,
-      resetForm
+      resetForm,
+      formatPhone,
+      hasUTMParameters,
+      isDev: import.meta.env.DEV,
+      testLinks,
+      getTestIcon,
+      getTestIconColor,
+      getTestTitle,
+      getTestDescription
     }
   }
 }
@@ -400,26 +685,7 @@ export default {
 
 <style scoped>
 .hero-section {
-  background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);
+  background: linear-gradient(135deg, #333 0%, #555 100%);
   min-height: 100vh;
-}
-
-.v-card {
-  border-radius: 16px;
-}
-
-.v-text-field {
-  margin-bottom: 8px;
-}
-
-.v-btn {
-  border-radius: 8px;
-}
-
-/* Responsividade */
-@media (max-width: 960px) {
-  .hero-section {
-    min-height: auto;
-  }
 }
 </style>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import axios from '@/config/axios'
 
 export const useLeadsStore = defineStore('leads', {
   state: () => ({
@@ -40,7 +40,7 @@ export const useLeadsStore = defineStore('leads', {
           params.append('search', search)
         }
 
-        const response = await axios.get(`/api/leads?${params}`)
+        const response = await axios.get(`/leads?${params}`)
         
         if (response.data.success) {
           this.leads = response.data.data.leads
@@ -60,7 +60,7 @@ export const useLeadsStore = defineStore('leads', {
     async createLead(leadData) {
       this.isLoading = true
       try {
-        const response = await axios.post('/api/leads', leadData)
+        const response = await axios.post(`/leads`, leadData)
         
         if (response.data.success) {
           this.leads.unshift(response.data.data)
@@ -100,7 +100,7 @@ export const useLeadsStore = defineStore('leads', {
     async fetchLeadById(id) {
       this.isLoading = true
       try {
-        const response = await axios.get(`/api/leads/${id}`)
+        const response = await axios.get(`/leads/${id}`)
         
         if (response.data.success) {
           this.currentLead = response.data.data
@@ -118,7 +118,7 @@ export const useLeadsStore = defineStore('leads', {
     async updateLead(id, leadData) {
       this.isLoading = true
       try {
-        const response = await axios.put(`/api/leads/${id}`, leadData)
+        const response = await axios.put(`/leads/${id}`, leadData)
         
         if (response.data.success) {
           const index = this.leads.findIndex(lead => lead.id === id)
@@ -140,7 +140,7 @@ export const useLeadsStore = defineStore('leads', {
     async deleteLead(id) {
       this.isLoading = true
       try {
-        const response = await axios.delete(`/api/leads/${id}`)
+        const response = await axios.delete(`/leads/${id}`)
         
         if (response.data.success) {
           this.leads = this.leads.filter(lead => lead.id !== id)
@@ -157,7 +157,7 @@ export const useLeadsStore = defineStore('leads', {
 
     async exportLeads(format = 'csv') {
       try {
-        const response = await axios.get(`/api/leads/export/${format}`, {
+        const response = await axios.get(`/leads/export/${format}`, {
           responseType: 'blob'
         })
         
