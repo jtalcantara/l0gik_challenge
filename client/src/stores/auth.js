@@ -32,7 +32,8 @@ export const useAuthStore = defineStore('auth', {
           return { success: false, message: response.data.message }
         }
       } catch (error) {
-        const message = error.response?.data?.message || 'Erro ao fazer login'
+        const errorData = error.response?.data
+        const message = errorData?.errors?.[0]?.message || errorData?.message || 'Erro ao fazer login'
         return { success: false, message }
       } finally {
         this.isLoading = false

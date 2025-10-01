@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getApiUrl, isDev } from './env'
+import { useToast } from '../composables/useToast'
 
 // Configurar base URL do axios
 axios.defaults.baseURL = getApiUrl()
@@ -7,31 +8,21 @@ axios.defaults.baseURL = getApiUrl()
 // Configurar timeout
 axios.defaults.timeout = 10000 // 10 segundos
 
+// Configurar para sempre tentar parsear JSON
+axios.defaults.responseType = 'json'
+
 // Interceptor para requisições
 axios.interceptors.request.use(
   (config) => {
-    // Log em desenvolvimento
-    if (isDev()) {
-      console.log(`🚀 ${config.method?.toUpperCase()} ${config.url}`)
-    }
-    
     // Adicionar token se existir (token já vem com Bearer da API)
     const token = localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = token
-      if (isDev()) {
-        console.log('🔑 Token adicionado à requisição')
-      }
-    } else {
-      if (isDev()) {
-        console.warn('⚠️ Nenhum token encontrado no localStorage')
-      }
     }
     
     return config
   },
   (error) => {
-    console.error('❌ Erro na requisição:', error)
     return Promise.reject(error)
   }
 )
@@ -39,28 +30,43 @@ axios.interceptors.request.use(
 // Interceptor para respostas
 axios.interceptors.response.use(
   (response) => {
-    // Log em desenvolvimento
-    if (isDev()) {
-      console.log(`✅ ${response.status} ${response.config.url}`)
-    }
     return response
   },
   (error) => {
-    // Log de erro
-    if (isDev()) {
-      console.error(`❌ ${error.response?.status || 'Network Error'} ${error.config?.url}`)
-      if (error.response?.data) {
-        console.error('📄 Dados do erro:', error.response.data)
-      }
-    }
-    
     // Tratar erro 401 (não autorizado)
     if (error.response?.status === 401) {
-      console.warn('🔒 Token inválido ou expirado, redirecionando para login')
       localStorage.removeItem('token')
       // Limpar headers do axios
       delete axios.defaults.headers.common['Authorization']
       window.location.href = '/'
+      return Promise.reject(error)
+    }
+    
+    // Exibir toast para outros erros (exceto 401 que redireciona)
+    if (error.response?.status && error.response.status !== 401) {
+      const { addToast } = useToast()
+      let errorData = error.response.data
+      
+      // Se errorData ainda for um Blob (fallback), usar mensagem baseada no status
+      if (errorData instanceof Blob) {
+        const statusMessages = {
+          403: 'Acesso negado. Você não tem permissão para esta ação.',
+          404: 'Recurso não encontrado.',
+          409: 'Conflito. O recurso já existe.',
+          422: 'Dados inválidos. Verifique os campos preenchidos.',
+          500: 'Erro interno do servidor. Tente novamente mais tarde.'
+        }
+        errorData = {
+          errors: [{ message: statusMessages[error.response.status] || 'Erro no servidor' }]
+        }
+      }
+      
+      const message = errorData?.errors?.[0]?.message || errorData?.message || 'Erro no servidor'
+      addToast(message, 'error', 6000)
+    } else if (!error.response) {
+      // Erro de rede
+      const { addToast } = useToast()
+      addToast('Erro de conexão. Verifique sua internet e tente novamente.', 'error', 6000)
     }
     
     return Promise.reject(error)

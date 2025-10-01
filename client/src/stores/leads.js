@@ -70,28 +70,8 @@ export const useLeadsStore = defineStore('leads', {
       } catch (error) {
         console.error('Erro ao criar lead:', error)
         
-        // Re-throw o erro para que o componente possa tratá-lo
-        if (error.response) {
-          // Erro de resposta do servidor
-          const errorData = {
-            message: error.response.data?.message || 'Erro no servidor',
-            status: error.response.status,
-            data: error.response.data
-          }
-          throw errorData
-        } else if (error.request) {
-          // Erro de rede
-          throw {
-            message: 'Erro de conexão. Verifique sua internet e tente novamente.',
-            status: 0
-          }
-        } else {
-          // Outro tipo de erro
-          throw {
-            message: 'Erro inesperado. Tente novamente.',
-            status: 0
-          }
-        }
+        // O interceptor do axios já trata os erros e exibe toasts automaticamente
+        throw error
       } finally {
         this.isLoading = false
       }
@@ -109,6 +89,9 @@ export const useLeadsStore = defineStore('leads', {
         return response.data
       } catch (error) {
         console.error('Erro ao buscar lead:', error)
+        
+        // O interceptor do axios já trata os erros e exibe toasts automaticamente
+        
         throw error
       } finally {
         this.isLoading = false
@@ -131,6 +114,9 @@ export const useLeadsStore = defineStore('leads', {
         return response.data
       } catch (error) {
         console.error('Erro ao atualizar lead:', error)
+        
+        // O interceptor do axios já trata os erros e exibe toasts automaticamente
+        
         throw error
       } finally {
         this.isLoading = false
@@ -149,6 +135,9 @@ export const useLeadsStore = defineStore('leads', {
         return response.data
       } catch (error) {
         console.error('Erro ao deletar lead:', error)
+        
+        // O interceptor do axios já trata os erros e exibe toasts automaticamente
+        
         throw error
       } finally {
         this.isLoading = false
@@ -173,6 +162,9 @@ export const useLeadsStore = defineStore('leads', {
         return { success: true }
       } catch (error) {
         console.error('Erro ao exportar leads:', error)
+        
+        // O interceptor do axios já trata os erros e exibe toasts automaticamente
+        
         throw error
       }
     },

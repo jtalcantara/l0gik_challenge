@@ -114,6 +114,9 @@
     <template v-else>
       <router-view />
     </template>
+    
+    <!-- Toast Container Global -->
+    <ToastContainer />
   </v-app>
 </template>
 
@@ -121,9 +124,13 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import ToastContainer from '@/components/ToastContainer.vue'
 
 export default {
   name: 'App',
+  components: {
+    ToastContainer
+  },
   setup() {
     const drawer = ref(false)
     const authStore = useAuthStore()
