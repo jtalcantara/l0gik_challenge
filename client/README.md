@@ -20,6 +20,7 @@ O frontend do Challenge L0gik é uma aplicação SPA (Single Page Application) d
 - **Formulário público** para captura de leads
 - **Painel administrativo** completo para gestão
 - **Interface responsiva** com Material Design
+- **Tema escuro moderno** com gradientes e glassmorphism
 - **Autenticação JWT** integrada
 - **Gerenciamento de estado** com Pinia
 
@@ -356,6 +357,8 @@ const captureUTMParams = () => {
 
 ### Design System
 - **Material Design 3** com Vuetify
+- **Tema escuro global** com gradientes modernos
+- **Glassmorphism** com efeitos de vidro e blur
 - **Responsivo** para todos os dispositivos
 - **Tema personalizado** com cores da marca
 - **Ícones** Material Design Icons
@@ -378,6 +381,33 @@ const captureUTMParams = () => {
 <v-btn>              // Botão
 <v-dialog>           // Modal
 <v-snackbar>         // Notificação
+```
+
+### Tema Escuro Global
+```css
+/* App.vue - Tema escuro implementado */
+.v-application {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+  min-height: 100vh;
+}
+
+/* Cards com glassmorphism */
+.v-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Texto claro para contraste */
+.v-application h1,
+.v-application h2,
+.v-application h3,
+.v-application h4,
+.v-application h5,
+.v-application h6 {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
 ```
 
 ### Cores Personalizadas
@@ -482,6 +512,15 @@ VITE_APP_TITLE=Challenge L0gik
 
 ## 🚀 Deploy
 
+### Deploy Automático com Vercel
+```bash
+# Deploy para produção
+npm run deploy
+
+# Deploy para preview
+npm run deploy:preview
+```
+
 ### Build para Produção
 ```bash
 # Build do projeto
@@ -494,7 +533,7 @@ npm run build
 ### Variáveis de Ambiente
 ```bash
 # Produção
-VITE_API_URL=https://api.exemplo.com/api
+VITE_API_URL=https://sua-api.vercel.app/api
 VITE_APP_TITLE=Challenge L0gik
 ```
 
@@ -507,6 +546,12 @@ dist/
 ├── 📄 index.html       # HTML principal
 └── 🖼️ favicon.ico      # Favicon
 ```
+
+### Configuração Vercel
+- **Deploy automático** do diretório `client/`
+- **Domínio** configurado automaticamente
+- **HTTPS** habilitado por padrão
+- **CDN global** para performance otimizada
 
 ---
 

@@ -21,10 +21,12 @@ O backend do Challenge L0gik é uma API REST completa que oferece:
 
 - **Endpoints RESTful** para CRUD de leads
 - **Autenticação JWT** com sistema de permissões
+- **Banco SQLite** em memória com seeder automático
 - **Validação robusta** de dados
 - **Sistema de permissões** granular
 - **Exportação** de dados em CSV
 - **Middleware** de segurança e validação
+- **Deploy automático** com Vercel
 
 ### 🌐 Base URL
 ```
@@ -47,6 +49,7 @@ http://localhost:3000/api
 ### Utilitários
 - **UUID** - Geração de IDs únicos
 - **CSV Writer** - Exportação CSV
+- **SQLite3** - Banco de dados em memória
 - **Module Alias** - Aliases de módulos
 
 ## 📦 Instalação
@@ -535,95 +538,118 @@ router.get('/export/csv', authenticateToken, requireAdmin, exportCSV)
 
 ## 📊 Banco de Dados
 
-### Estrutura JSON
-O sistema utiliza arquivos JSON para armazenamento temporário:
+### SQLite em Memória
+O sistema utiliza SQLite em memória com seeder automático:
 
-#### data/leads.json
-```json
-{
-  "leads": [
-    {
-      "id": "uuid",
-      "nome": "João Silva",
-      "email": "joao@email.com",
-      "telefone": "(11) 99999-9999",
-      "cargo": "Desenvolvedor",
-      "dataNascimento": "1990-01-01",
-      "mensagem": "Interesse no produto",
-      "tracking": {
-        "utm_source": "google",
-        "utm_medium": "cpc",
-        "utm_campaign": "campanha_2024",
-        "utm_term": "desenvolvimento",
-        "utm_content": "banner_principal",
-        "gclid": "abc123",
-        "fbclid": "def456"
-      },
-      "createdAt": "2024-01-01T00:00:00.000Z",
-      "updatedAt": "2024-01-01T00:00:00.000Z"
-    }
-  ]
-}
+#### Estrutura das Tabelas
+```sql
+-- Tabela de leads
+CREATE TABLE leads (
+  id TEXT PRIMARY KEY,
+  nome TEXT NOT NULL,
+  email TEXT NOT NULL,
+  telefone TEXT NOT NULL,
+  cargo TEXT NOT NULL,
+  dataNascimento TEXT NOT NULL,
+  mensagem TEXT NOT NULL,
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  utm_term TEXT,
+  utm_content TEXT,
+  gclid TEXT,
+  fbclid TEXT,
+  createdAt TEXT NOT NULL,
+  updatedAt TEXT NOT NULL
+);
+
+-- Tabela de usuários
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT NOT NULL
+);
+
+-- Tabela de permissões
+CREATE TABLE permissions (
+  role TEXT PRIMARY KEY,
+  canRead INTEGER NOT NULL,
+  canWrite INTEGER NOT NULL,
+  canDelete INTEGER NOT NULL,
+  canExport INTEGER NOT NULL,
+  canViewAll INTEGER NOT NULL,
+  canManageUsers INTEGER NOT NULL
+);
 ```
 
-#### data/users.json
-```json
-[
+#### Seeder Automático
+```javascript
+// seeders/auto-seeder.js
+const INITIAL_USERS = [
   {
-    "id": "1",
-    "username": "admin",
-    "password": "$2a$10$...",
-    "role": "admin"
+    id: '1',
+    username: 'admin',
+    password: '$2a$10$...', // password
+    role: 'admin'
   },
   {
-    "id": "2",
-    "username": "operador",
-    "password": "$2a$10$...",
-    "role": "operador"
+    id: '2',
+    username: 'operador',
+    password: '$2a$10$...', // password
+    role: 'operador'
   }
-]
-```
+];
 
-#### data/rolePermissions.json
-```json
-{
-  "admin": {
-    "canRead": true,
-    "canWrite": true,
-    "canDelete": true,
-    "canExport": true,
-    "canViewAll": true,
-    "canManageUsers": true
-  },
-  "operador": {
-    "canRead": true,
-    "canWrite": false,
-    "canDelete": false,
-    "canExport": false,
-    "canViewAll": false,
-    "canManageUsers": false
+const INITIAL_LEADS = [
+  {
+    id: uuidv4(),
+    nome: "Maria Silva Santos",
+    email: "maria.silva@email.com",
+    telefone: "(11) 98765-4321",
+    cargo: "Desenvolvedora Frontend",
+    dataNascimento: "1985-05-15",
+    mensagem: "Tenho interesse em conhecer mais sobre as oportunidades...",
+    tracking: {
+      utm_source: "linkedin",
+      utm_medium: "social",
+      utm_campaign: "vagas_tech",
+      utm_term: "desenvolvedor",
+      utm_content: "post_vagas",
+      gclid: null,
+      fbclid: null
+    },
+    createdAt: getRandomDate(),
+    updatedAt: getRandomDate()
   }
-}
+  // ... mais leads
+];
 ```
 
 ### Operações de Banco
 ```javascript
-// database/index.js
-const fs = require('fs')
-const path = require('path')
+// database/memory-db.js
+const sqlite3 = require('sqlite3').verbose();
 
-// Ler dados
-const readData = (filename) => {
-  const filePath = path.join(__dirname, '..', 'data', filename)
-  const data = fs.readFileSync(filePath, 'utf8')
-  return JSON.parse(data)
-}
+// Inicializar banco
+const initDB = () => {
+  return new Promise((resolve, reject) => {
+    db = new sqlite3.Database(':memory:', (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+};
 
-// Escrever dados
-const writeData = (filename, data) => {
-  const filePath = path.join(__dirname, '..', 'data', filename)
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-}
+// Buscar leads
+const getLeads = () => {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM leads ORDER BY createdAt DESC", (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+};
 ```
 
 ## 📁 Estrutura do Projeto
@@ -731,6 +757,15 @@ const loginSchema = {
 
 ## 🚀 Deploy
 
+### Deploy Automático com Vercel
+```bash
+# Deploy para produção
+npm run deploy
+
+# Deploy para preview
+npm run deploy:preview
+```
+
 ### Variáveis de Ambiente
 ```bash
 # Produção
@@ -747,6 +782,12 @@ npm install
 # Executar em produção
 npm start
 ```
+
+### Configuração Vercel
+- **API Routes** no diretório `api/`
+- **Deploy automático** do diretório `server/`
+- **Domínio** configurado automaticamente
+- **HTTPS** habilitado por padrão
 
 ### Docker (Opcional)
 ```dockerfile

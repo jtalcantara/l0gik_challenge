@@ -6,21 +6,6 @@
     <!-- Conteúdo principal -->
     <v-container fluid class="pa-0 full-height">
       <v-row no-gutters class="login-section full-height">
-        <!-- Logo e título -->
-        <v-col cols="12" class="d-flex align-center justify-center pa-6">
-          <div class="text-center">
-            <div class="logo-container mb-4">
-              <v-icon size="80" color="white" class="logo-icon">mdi-shield-account</v-icon>
-            </div>
-            <h1 class="text-h3 font-weight-light text-white mb-2">
-              Challenge L0gik
-            </h1>
-            <p class="text-h6 text-white opacity-90">
-              Sistema de Gestão de Leads
-            </p>
-          </div>
-        </v-col>
-        
         <!-- Card de login -->
         <v-col cols="12" class="d-flex justify-center pa-6">
           <div class="login-container">

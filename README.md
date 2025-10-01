@@ -49,7 +49,8 @@ O Challenge L0gik é um sistema completo de gestão de leads que permite:
 - **CORS** - Controle de origem
 
 ### Banco de Dados
-- **JSON Files** - Armazenamento temporário para MVP
+- **SQLite em Memória** - Banco relacional temporário para MVP
+- **Seeder Automático** - Dados iniciais carregados automaticamente
 - **Estrutura preparada** para migração para PostgreSQL/MongoDB
 
 ## ✨ Funcionalidades
@@ -73,6 +74,8 @@ O Challenge L0gik é um sistema completo de gestão de leads que permite:
 - ✅ **Visualização detalhada** com dados de tracking
 - ✅ **Exportação** em CSV
 - ✅ **Interface responsiva** para mobile/tablet/desktop
+- ✅ **Tema escuro** com gradientes modernos
+- ✅ **Interface glassmorphism** com efeitos de vidro
 
 ### 🛡️ Segurança
 - ✅ **Headers de segurança** com Helmet
@@ -208,6 +211,17 @@ challenge_l0gik/
 
 ## 🚀 Deploy
 
+### Deploy Automático com Vercel
+O projeto está configurado para deploy automático na Vercel:
+
+```bash
+# Deploy para produção
+npm run deploy
+
+# Deploy para preview
+npm run deploy:preview
+```
+
 ### Variáveis de Ambiente
 ```bash
 # Backend
@@ -216,7 +230,7 @@ PORT=3000
 JWT_SECRET=sua_chave_secreta_aqui
 
 # Frontend
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=https://sua-api.vercel.app/api
 ```
 
 ### Build para Produção
@@ -227,6 +241,11 @@ cd client && npm run build
 # Executar backend
 cd server && npm start
 ```
+
+### Configuração Vercel
+- **Frontend**: Deploy automático do diretório `client/`
+- **Backend**: API Routes no diretório `server/api/`
+- **Domínio**: Configurado automaticamente pela Vercel
 
 ### Scripts Disponíveis
 
@@ -254,6 +273,54 @@ npm start            # Executar em produção
 
 ### Estrutura de Dados
 
+#### Banco SQLite
+O sistema utiliza SQLite em memória com as seguintes tabelas:
+
+**Tabela `leads`:**
+```sql
+CREATE TABLE leads (
+  id TEXT PRIMARY KEY,
+  nome TEXT NOT NULL,
+  email TEXT NOT NULL,
+  telefone TEXT NOT NULL,
+  cargo TEXT NOT NULL,
+  dataNascimento TEXT NOT NULL,
+  mensagem TEXT NOT NULL,
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  utm_term TEXT,
+  utm_content TEXT,
+  gclid TEXT,
+  fbclid TEXT,
+  createdAt TEXT NOT NULL,
+  updatedAt TEXT NOT NULL
+);
+```
+
+**Tabela `users`:**
+```sql
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT NOT NULL
+);
+```
+
+**Tabela `permissions`:**
+```sql
+CREATE TABLE permissions (
+  role TEXT PRIMARY KEY,
+  canRead INTEGER NOT NULL,
+  canWrite INTEGER NOT NULL,
+  canDelete INTEGER NOT NULL,
+  canExport INTEGER NOT NULL,
+  canViewAll INTEGER NOT NULL,
+  canManageUsers INTEGER NOT NULL
+);
+```
+
 #### Lead Exemplo
 ```json
 {
@@ -277,6 +344,12 @@ npm start            # Executar em produção
   "updatedAt": "2024-01-01T00:00:00.000Z"
 }
 ```
+
+#### Seeder Automático
+O sistema inclui um seeder automático que carrega:
+- **2 usuários** (admin e operador)
+- **5 leads** de exemplo com dados realistas
+- **Permissões** configuradas para cada role
 
 ## 🛡️ Sistema de Permissões
 
