@@ -527,16 +527,16 @@ export default {
 
     // Links de teste com diferentes UTM
     const testLinks = {
-      googleAds: 'http://localhost:5173/formulario?utm_source=google&utm_medium=cpc&utm_campaign=google_ads&utm_term=desenvolvimento&utm_content=banner&gclid=abc123456',
-      facebookAds: 'http://localhost:5173/formulario?utm_source=facebook&utm_medium=social&utm_campaign=fb_ads&utm_content=video&fbclid=xyz789012',
-      emailMarketing: 'http://localhost:5173/formulario?utm_source=newsletter&utm_medium=email&utm_campaign=promocao&utm_content=cta_button',
-      instagram: 'http://localhost:5173/formulario?utm_source=instagram&utm_medium=social&utm_campaign=stories&utm_content=carousel',
-      youtube: 'http://localhost:5173/formulario?utm_source=youtube&utm_medium=video&utm_campaign=tutorial&utm_term=vue&utm_content=thumbnail',
-      linkedin: 'http://localhost:5173/formulario?utm_source=linkedin&utm_medium=social&utm_campaign=professional&utm_content=post',
-      twitter: 'http://localhost:5173/formulario?utm_source=twitter&utm_medium=social&utm_campaign=thread&utm_content=retweet',
-      organic: 'http://localhost:5173/formulario?utm_source=google&utm_medium=organic&utm_campaign=seo&utm_term=vue+js',
-      direct: 'http://localhost:5173/formulario?utm_source=direct&utm_medium=none&utm_campaign=bookmark',
-      referral: 'http://localhost:5173/formulario?utm_source=github&utm_medium=referral&utm_campaign=opensource'
+      googleAds: '/formulario?utm_source=google&utm_medium=cpc&utm_campaign=google_ads&utm_term=desenvolvimento&utm_content=banner&gclid=abc123456',
+      facebookAds: '/formulario?utm_source=facebook&utm_medium=social&utm_campaign=fb_ads&utm_content=video&fbclid=xyz789012',
+      emailMarketing: '/formulario?utm_source=newsletter&utm_medium=email&utm_campaign=promocao&utm_content=cta_button',
+      instagram: '/formulario?utm_source=instagram&utm_medium=social&utm_campaign=stories&utm_content=carousel',
+      youtube: '/formulario?utm_source=youtube&utm_medium=video&utm_campaign=tutorial&utm_term=vue&utm_content=thumbnail',
+      linkedin: '/formulario?utm_source=linkedin&utm_medium=social&utm_campaign=professional&utm_content=post',
+      twitter: '/formulario?utm_source=twitter&utm_medium=social&utm_campaign=thread&utm_content=retweet',
+      organic: '/formulario?utm_source=google&utm_medium=organic&utm_campaign=seo&utm_term=vue+js',
+      direct: '/formulario?utm_source=direct&utm_medium=none&utm_campaign=bookmark',
+      referral: '/formulario?utm_source=github&utm_medium=referral&utm_campaign=opensource'
     }
 
     // Funções auxiliares para os cards de teste
