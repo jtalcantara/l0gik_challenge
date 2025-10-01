@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node -r ./aliases.js index.js",
     "dev": "nodemon -r ./aliases.js index.js",
+    "build": "echo 'No build needed for Node.js'",
     "deploy": "vercel --prod --yes",
     "deploy:preview": "vercel --yes"
   },
