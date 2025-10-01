@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { generateToken } = require('../middleware/auth');
-const { getUserByUsername, addUser } = require('../database');
+const { getUserByUsername, addUser } = require('../database/memory-db');
 const { HttpResponses } = require('../utils/http-responses');
 const { loginSchema, registerSchema, validateSchema } = require('../schemas/validation');
 const { Permissions } = require('../middleware/permissions');
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/login', validateSchema(loginSchema), async (req, res) => {
   const { username, password } = req.body;
 
-  const user = getUserByUsername(username);
+  const user = await getUserByUsername(username);
 
   if (!user)
     return HttpResponses.error(res, [new Error('Credenciais inválidas')], 401);
@@ -45,7 +45,7 @@ router.post('/register', validateSchema(registerSchema), authenticateToken, Perm
   const { username, password } = req.body;
 
   // Verificar se usuário já existe
-  const existingUser = getUserByUsername(username);
+  const existingUser = await getUserByUsername(username);
 
   if (existingUser)
     return HttpResponses.error(res, { message: 'Username já existe' }, 409);

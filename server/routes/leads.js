@@ -8,7 +8,7 @@ const {
   getLead,
   updateLead,
   deleteLead
-} = require('../database');
+} = require('../database/memory-db');
 const { v4: uuidv4 } = require('uuid');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
@@ -20,8 +20,8 @@ const router = express.Router();
 const leadValidation = validateSchema(leadSchema);
 
 // GET /api/leads - Listar leads, qualquer um com permissao de leitura pode ver
-router.get('/', authenticateToken, Permissions.checkPermissionRead, validateQuery(querySchema), (req, res) => {
-  let leads = getLeads();
+router.get('/', authenticateToken, Permissions.checkPermissionRead, validateQuery(querySchema), async (req, res) => {
+  let leads = await getLeads();
 
   // Aplicar filtro de busca
   const search = req.query.search;
@@ -59,9 +59,9 @@ router.get('/', authenticateToken, Permissions.checkPermissionRead, validateQuer
 });
 
 // POST /api/leads - Criar lead (público)
-router.post('/', leadValidation, (req, res) => {
+router.post('/', leadValidation, async (req, res) => {
   // Verificar se email já existe
-  const existingLead = getLeads().find(lead => lead.email === req.body.email);
+  const existingLead = (await getLeads()).find(lead => lead.email === req.body.email);
 
   if (existingLead) {
     return HttpResponses.error(res, new Error('Email já cadastrado'), 409);
@@ -89,7 +89,7 @@ router.post('/', leadValidation, (req, res) => {
     updatedAt: new Date().toISOString()
   };
 
-  if (addLead(newLead)) {
+  if (await addLead(newLead)) {
     return HttpResponses.success(res, newLead, 201);
   } else {
     return HttpResponses.error(res, new Error('Erro ao cadastrar lead'), 500);
@@ -97,8 +97,8 @@ router.post('/', leadValidation, (req, res) => {
 });
 
 // GET /api/leads/:id - Obter lead por email ou id, qualquer um com permissao de leitura pode ver
-router.get('/:id', authenticateToken, Permissions.checkPermissionRead, (req, res) => {
-  const lead = getLead(req.params.id);
+router.get('/:id', authenticateToken, Permissions.checkPermissionRead, async (req, res) => {
+  const lead = await getLead(req.params.id);
 
   if (!lead) {
     return HttpResponses.error(res, new Error('Lead não encontrado'), 404);
@@ -109,9 +109,9 @@ router.get('/:id', authenticateToken, Permissions.checkPermissionRead, (req, res
 
 
 // PATCH /api/leads/:id - Atualizar lead parcialmente, qualquer um com permissao de escrita pode editar
-router.patch('/:id', authenticateToken, Permissions.checkPermissionWrite, validateSchema(leadPatchSchema), (req, res) => {
+router.patch('/:id', authenticateToken, Permissions.checkPermissionWrite, validateSchema(leadPatchSchema), async (req, res) => {
 
-  const existingLead = getLead(req.params.id);
+  const existingLead = await getLead(req.params.id);
   
   if (!existingLead) {
     return HttpResponses.error(res, new Error('Lead não encontrado'), 404);
@@ -119,7 +119,7 @@ router.patch('/:id', authenticateToken, Permissions.checkPermissionWrite, valida
 
   // Verificar se email já existe em outro lead (apenas se email está sendo atualizado)
   if (req.body.email) {
-    const emailExists = getLeads().find(lead =>
+    const emailExists = (await getLeads()).find(lead =>
       lead.email === req.body.email && lead.id !== req.params.id
     );
     if (emailExists) {
@@ -144,8 +144,8 @@ router.patch('/:id', authenticateToken, Permissions.checkPermissionWrite, valida
     updatedAt: new Date().toISOString()
   };
 
-  if (updateLead(req.params.id, updateData)) {
-    const updatedLead = getLead(req.params.id);
+  if (await updateLead(req.params.id, updateData)) {
+    const updatedLead = await getLead(req.params.id);
     return HttpResponses.success(res, updatedLead, 200);
   } else {
     return HttpResponses.error(res, new Error('Erro ao atualizar lead'), 500);
@@ -153,8 +153,8 @@ router.patch('/:id', authenticateToken, Permissions.checkPermissionWrite, valida
 });
 
 // DELETE /api/leads/:id - Deletar lead (apenas admin pode deletar)
-router.delete('/:id', authenticateToken, Permissions.requireAdmin, (req, res) => {
-  const deletedLead = deleteLead(req.params.id);
+router.delete('/:id', authenticateToken, Permissions.requireAdmin, async (req, res) => {
+  const deletedLead = await deleteLead(req.params.id);
 
   if (deletedLead) {
     return HttpResponses.success(res, { message: 'Lead deletado com sucesso' });
@@ -164,8 +164,8 @@ router.delete('/:id', authenticateToken, Permissions.requireAdmin, (req, res) =>
 });
 
 // GET /api/leads/export/csv - Exportar leads em CSV, qualquer um com permissao de exportacao pode exportar
-router.get('/export/csv', authenticateToken, Permissions.checkPermissionExport, (req, res) => {
-  const leads = getLeads();
+router.get('/export/csv', authenticateToken, Permissions.checkPermissionExport, async (req, res) => {
+  const leads = await getLeads();
 
   if (leads.length === 0) {
     return HttpResponses.error(res, new Error('Nenhum lead encontrado para exportar'), 404);
@@ -210,9 +210,9 @@ router.get('/export/csv', authenticateToken, Permissions.checkPermissionExport, 
 });
 
 // GET /api/leads/limited - Listar leads com informações limitadas (apenas operador)
-router.get('/limited', authenticateToken, Permissions.checkPermissionRead, validateQuery(querySchema), (req, res) => {
+router.get('/limited', authenticateToken, Permissions.checkPermissionRead, validateQuery(querySchema), async (req, res) => {
 
-  let leads = getLeads();
+  let leads = await getLeads();
 
   // Aplicar filtro de busca
   const search = req.query.search;
@@ -258,9 +258,9 @@ router.get('/limited', authenticateToken, Permissions.checkPermissionRead, valid
 });
 
 // GET /api/leads/limited/:id - Obter lead limitado por ID (apenas operador)
-router.get('/limited/:id', authenticateToken, Permissions.checkPermissionRead, (req, res) => {
+router.get('/limited/:id', authenticateToken, Permissions.checkPermissionRead, async (req, res) => {
 
-  const lead = getLead(req.params.id);
+  const lead = await getLead(req.params.id);
 
   if (!lead) {
     return HttpResponses.error(res, new Error('Lead não encontrado'), 404);

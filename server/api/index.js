@@ -12,7 +12,7 @@ const { HttpResponses } = require('../utils/http-responses');
 const { errorHandler } = require('../middleware/error-handler');
 
 // Importar e executar seeder
-const { initializeData } = require('../database');
+const { initializeData } = require('../database/memory-db');
 
 const app = express();
 
@@ -71,6 +71,15 @@ app.use(errorHandler);
 // Executar seeder na inicialização
 initializeData().then(() => {
   console.log('✅ Dados iniciais carregados com sucesso');
+  
+  // Inicializar servidor apenas em desenvolvimento local
+  if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor rodando na porta ${PORT}`);
+      console.log(`🔗 API: http://localhost:${PORT}/api`);
+    });
+  }
 }).catch((error) => {
   console.error('❌ Erro ao carregar dados iniciais:', error);
 });
