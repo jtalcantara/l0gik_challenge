@@ -13,10 +13,10 @@ const { errorHandler } = require('../middleware/error-handler');
 
 const app = express();
 
-// CORS
+// CORS - Configuração simples
 app.use(cors({
-  origin: config.cors.origin,
-  credentials: config.cors.credentials
+  origin: '*',
+  credentials: false
 }));
 
 // Middlewares
