@@ -11,7 +11,6 @@ const {
 } = require('@/database');
 const { v4: uuidv4 } = require('uuid');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const XLSX = require('xlsx');
 const path = require('path');
 const { HttpResponses } = require('@/utils/http-responses');
 
@@ -154,17 +153,17 @@ router.patch('/:id', authenticateToken, Permissions.checkPermissionWrite, valida
 });
 
 // DELETE /api/leads/:id - Deletar lead (apenas admin pode deletar)
-router.delete('/:id', authenticateToken, Permissions.checkPermissionDelete, (req, res) => {
+router.delete('/:id', authenticateToken, Permissions.requireAdmin, (req, res) => {
   const deletedLead = deleteLead(req.params.id);
 
   if (deletedLead) {
-    return HttpResponses.success(res, deletedLead);
+    return HttpResponses.success(res, { message: 'Lead deletado com sucesso' });
   } else {
     return HttpResponses.error(res, new Error('Lead não encontrado'), 404);
   }
 });
 
-// GET /api/leads/export/csv - Exportar leads em CSV (apenas admin pode exportar)
+// GET /api/leads/export/csv - Exportar leads em CSV, qualquer um com permissao de exportacao pode exportar
 router.get('/export/csv', authenticateToken, Permissions.checkPermissionExport, (req, res) => {
   const leads = getLeads();
 
@@ -207,43 +206,6 @@ router.get('/export/csv', authenticateToken, Permissions.checkPermissionExport, 
     res.download(path.join(__dirname, '../data/leads_export.csv'), 'leads.csv');
   });
 
-
-});
-
-// GET /api/leads/export/excel - Exportar leads em Excel (apenas admin pode exportar)
-router.get('/export/excel', authenticateToken, Permissions.checkPermissionExport, (req, res) => {
-  const leads = getLeads();
-
-  if (leads.length === 0) {
-    return HttpResponses.error(res, new Error('Nenhum lead encontrado para exportar'), 404);
-  }
-
-  const excelData = leads.map(lead => ({
-    Nome: lead.nome,
-    Email: lead.email,
-    Telefone: lead.telefone,
-    Cargo: lead.cargo,
-    'Data de Nascimento': lead.dataNascimento,
-    Mensagem: lead.mensagem,
-    'UTM Source': lead.tracking.utm_source,
-    'UTM Medium': lead.tracking.utm_medium,
-    'UTM Campaign': lead.tracking.utm_campaign,
-    'UTM Term': lead.tracking.utm_term,
-    'UTM Content': lead.tracking.utm_content,
-    GCLID: lead.tracking.gclid,
-    FBCLID: lead.tracking.fbclid,
-    'Data de Criação': lead.createdAt
-  }));
-
-  const worksheet = XLSX.utils.json_to_sheet(excelData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
-
-  const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=leads.xlsx');
-  res.send(excelBuffer);
 
 });
 
