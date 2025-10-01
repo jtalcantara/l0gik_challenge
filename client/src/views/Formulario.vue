@@ -1,33 +1,36 @@
 <template>
-  <v-container fluid class="pa-0 full-height">
+  <v-container fluid class="pa-0">
     <!-- Hero Section -->
-    <v-row no-gutters class="hero-section full-height">
+    <v-row no-gutters class="hero-section">
       <!-- Título e descrição no topo -->
-      <v-col cols="12" class="pa-12 d-flex justify-center align-center">
-        <div class="text-center ">
-          <h1 class="text-h3 font-weight-bold mb-4 text-white">
+      <v-col cols="12" class="pa-6 pa-md-12 d-flex justify-center align-center">
+        <div class="text-center">
+          <h1 class="text-h4 text-md-h3 font-weight-bold mb-4 text-white">
             Cadastre-se e Transforme seu Negócio
           </h1>
-          <p class="text-h6 text-white mb-6">
+          <p class="text-body-1 text-md-h6 text-white mb-6">
             Preencha o formulário abaixo e receba informações exclusivas sobre nossos produtos e serviços.
           </p>
-          <v-chip
-            v-for="benefit in benefits"
-            :key="benefit"
-            color="white"
-            variant="outlined"
-            class="ma-1"
-          >
-            {{ benefit }}
-          </v-chip>
+          <div class="d-flex flex-wrap justify-center">
+            <v-chip
+              v-for="benefit in benefits"
+              :key="benefit"
+              color="white"
+              variant="outlined"
+              class="ma-1"
+              size="small"
+            >
+              {{ benefit }}
+            </v-chip>
+          </div>
         </div>
       </v-col>
       
       <!-- Formulário centralizado -->
-      <v-col cols="12" class="d-flex justify-center pa-4">
+      <v-col cols="12" class="d-flex justify-center pa-2 pa-md-4">
         <div class="form-container">
-        <v-card elevation="8" class="pa-6" rounded="lg">
-          <v-card-title class="text-h4 text-center mb-6">
+        <v-card elevation="8" class="pa-4 pa-md-6" rounded="lg">
+          <v-card-title class="text-h5 text-md-h4 text-center mb-4 mb-md-6">
             <v-icon color="primary" size="large" class="mr-2">mdi-account-plus</v-icon>
             Cadastro de Lead
           </v-card-title>
@@ -77,7 +80,7 @@
 
           <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="formData.nome"
                   label="Nome Completo *"
@@ -87,10 +90,11 @@
                   required
                   :error-messages="fieldErrors.nome"
                   @blur="validateField('nome')"
+                  density="comfortable"
                 ></v-text-field>
               </v-col>
               
-              <v-col cols="12" md="6">
+              <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="formData.email"
                   label="E-mail *"
@@ -101,12 +105,13 @@
                   required
                   :error-messages="fieldErrors.email"
                   @blur="validateField('email')"
+                  density="comfortable"
                 ></v-text-field>
               </v-col>
             </v-row>
 
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="formData.telefone"
                   label="Telefone *"
@@ -118,10 +123,11 @@
                   :error-messages="fieldErrors.telefone"
                   @blur="validateField('telefone')"
                   @input="formatPhone"
+                  density="comfortable"
                 ></v-text-field>
               </v-col>
               
-              <v-col cols="12" md="6">
+              <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="formData.cargo"
                   label="Cargo *"
@@ -131,12 +137,13 @@
                   required
                   :error-messages="fieldErrors.cargo"
                   @blur="validateField('cargo')"
+                  density="comfortable"
                 ></v-text-field>
               </v-col>
             </v-row>
 
             <v-row>
-              <v-col cols="12" md="6">
+              <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="formData.dataNascimento"
                   label="Data de Nascimento *"
@@ -147,6 +154,7 @@
                   required
                   :error-messages="fieldErrors.dataNascimento"
                   @blur="validateField('dataNascimento')"
+                  density="comfortable"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -163,6 +171,7 @@
                   required
                   :error-messages="fieldErrors.mensagem"
                   @blur="validateField('mensagem')"
+                  density="comfortable"
                 ></v-textarea>
               </v-col>
             </v-row>
@@ -201,7 +210,7 @@
                   block
                   :loading="isLoading"
                   :disabled="!valid || isLoading"
-                  class="text-h6 py-3"
+                  class="text-body-1 text-md-h6 py-3"
                 >
                   <v-icon left>mdi-send</v-icon>
                   {{ isLoading ? 'Enviando...' : 'Enviar Cadastro' }}
@@ -216,16 +225,16 @@
     </v-row>
 
     <!-- Seção de Testes UTM (apenas em desenvolvimento) -->
-    <v-row v-if="isDev" no-gutters>
-      <v-col cols="12" class="pa-8">
-        <v-container>
-          <v-card elevation="4">
-            <v-card-title class="text-center pa-6">
-              <v-icon color="info" size="large" class="mr-3">mdi-test-tube</v-icon>
-              <span class="text-h5 font-weight-bold">Links de Teste UTM</span>
+    <v-row v-if="isDev" no-gutters class="hero-section">
+      <v-col cols="12" class="d-flex justify-center pa-2 pa-md-4">
+        <div class="form-container">
+          <v-card elevation="8" class="pa-4 pa-md-6" rounded="lg">
+            <v-card-title class="text-h5 text-md-h4 text-center mb-4 mb-md-6">
+              <v-icon color="info" size="large" class="mr-2">mdi-test-tube</v-icon>
+              Links de Teste UTM
             </v-card-title>
             
-            <v-card-text class="pa-6">
+            <v-card-text class="pa-0">
               <v-alert
                 type="info"
                 variant="tonal"
@@ -233,7 +242,7 @@
                 closable
               >
                 <template #title>
-                  Como usar testar os parâmetros UTM?
+                  Como testar os parâmetros UTM?
                 </template>
                 <p class="mt-2 mb-0">
                   Clique nos botões abaixo para testar diferentes cenários de tracking UTM. 
@@ -241,16 +250,16 @@
                 </p>
               </v-alert>
 
-              <v-row>
+              <v-row class="utm-test-cards">
                 <v-col v-for="(url, name) in testLinks" :key="name" cols="12" sm="6" md="4" lg="3">
                   <v-card
                     :href="url"
                     target="_blank"
                     elevation="2"
                     hover
-                    class="text-decoration-none"
+                    class="text-decoration-none h-100"
                   >
-                    <v-card-text class="pa-4 text-center">
+                    <v-card-text class="pa-4 text-center d-flex flex-column h-100">
                       <v-icon 
                         :color="getTestIconColor(name)" 
                         size="32" 
@@ -261,7 +270,7 @@
                       <h6 class="text-subtitle-1 font-weight-bold mb-2">
                         {{ getTestTitle(name) }}
                       </h6>
-                      <p class="text-caption text-medium-emphasis mb-3">
+                      <p class="text-caption text-medium-emphasis mb-3 flex-grow-1">
                         {{ getTestDescription(name) }}
                       </p>
                       <v-btn
@@ -269,6 +278,7 @@
                         variant="outlined"
                         size="small"
                         block
+                        class="mt-auto"
                       >
                         <v-icon left size="small">mdi-open-in-new</v-icon>
                         Testar
@@ -280,10 +290,9 @@
 
               <v-divider class="my-6"></v-divider>
               
-             
             </v-card-text>
           </v-card>
-        </v-container>
+        </div>
       </v-col>
     </v-row>
 
@@ -397,17 +406,6 @@ export default {
       formData.utm_content = urlParams.get('utm_content') || ''
       formData.gclid = urlParams.get('gclid') || ''
       formData.fbclid = urlParams.get('fbclid') || ''
-      
-      // Debug: mostrar parâmetros capturados
-      console.log('🔍 Parâmetros UTM capturados:', {
-        utm_source: formData.utm_source,
-        utm_medium: formData.utm_medium,
-        utm_campaign: formData.utm_campaign,
-        utm_term: formData.utm_term,
-        utm_content: formData.utm_content,
-        gclid: formData.gclid,
-        fbclid: formData.fbclid
-      })
     }
 
     const formatPhone = (event) => {
@@ -504,8 +502,6 @@ export default {
           errorMessage.value = result.message || 'Erro ao cadastrar lead'
         }
       } catch (error) {
-        console.error('Erro ao cadastrar lead:', error)
-        
         if (error.response?.data?.message) {
           errorMessage.value = error.response.data.message
         } else if (error.response?.status === 409) {
@@ -541,27 +537,6 @@ export default {
       organic: 'http://localhost:5173/formulario?utm_source=google&utm_medium=organic&utm_campaign=seo&utm_term=vue+js',
       direct: 'http://localhost:5173/formulario?utm_source=direct&utm_medium=none&utm_campaign=bookmark',
       referral: 'http://localhost:5173/formulario?utm_source=github&utm_medium=referral&utm_campaign=opensource'
-    }
-
-    const displayTestLinks = () => {
-      console.log('🔗 LINKS DE TESTE COM UTM PARAMETERS')
-      console.log('=====================================')
-      console.log('')
-      
-      Object.entries(testLinks).forEach(([name, url]) => {
-        console.log(`📌 ${name.toUpperCase()}:`)
-        console.log(`   ${url}`)
-        console.log('')
-      })
-      
-      console.log('💡 COMO USAR:')
-      console.log('1. Copie qualquer link acima')
-      console.log('2. Cole no navegador')
-      console.log('3. Veja os parâmetros UTM sendo capturados')
-      console.log('4. Preencha o formulário e envie')
-      console.log('5. Verifique o lead criado com tracking preenchido')
-      console.log('')
-      console.log('🎯 DICA: Use Ctrl+Click para abrir em nova aba')
     }
 
     // Funções auxiliares para os cards de teste
@@ -631,7 +606,6 @@ export default {
 
     onMounted(() => {
       extractUTMParameters()
-      displayTestLinks()
     })
 
     return {
@@ -664,6 +638,7 @@ export default {
 .hero-section {
   background: linear-gradient(135deg, #333 0%, #555 100%);
   min-height: 100vh;
+  padding: 60px 0;
 }
 
 .full-height {
@@ -685,19 +660,109 @@ export default {
 .form-container {
   max-width: 800px;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* Responsividade para telas menores */
 @media (max-width: 768px) {
   .form-container {
     max-width: 100%;
-    padding: 0 16px;
+    padding: 0 8px;
+  }
+  
+  .hero-section {
+    min-height: 100vh;
+    padding: 20px 0;
+  }
+  
+  .v-card {
+    margin: 0 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0 4px;
+  }
+  
+  .v-card {
+    margin: 0 2px;
   }
 }
 
 @media (min-width: 1200px) {
   .form-container {
     max-width: 900px;
+  }
+}
+
+/* Garantir que o container não quebre */
+.v-container--fluid {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Melhorar espaçamento em telas pequenas */
+@media (max-width: 600px) {
+  .v-row {
+    margin: 0;
+  }
+  
+  .v-col {
+    padding: 8px;
+  }
+}
+
+/* Estilos específicos para a seção UTM */
+.utm-test-cards {
+  min-height: 200px;
+}
+
+.utm-test-cards .v-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.utm-test-cards .v-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsividade das seções */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 40px 0;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 30px 0;
+  }
+}
+
+/* Remover espaçamento entre seções para background contínuo */
+.hero-section + .hero-section {
+  margin-top: 0;
+}
+
+/* Responsividade dos cards UTM */
+@media (max-width: 768px) {
+  .utm-test-cards .v-card-text {
+    padding: 16px !important;
+  }
+  
+  .utm-test-cards .v-icon {
+    font-size: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .utm-test-cards .v-card-text {
+    padding: 12px !important;
+  }
+  
+  .utm-test-cards .v-btn {
+    font-size: 0.75rem !important;
   }
 }
 </style>
