@@ -29,16 +29,30 @@
             Cadastro de Lead
           </v-card-title>
 
+          <!-- Alert de erro -->
+          <v-alert
+            v-if="errorMessage"
+            type="error"
+            variant="tonal"
+            class="mb-4"
+            closable
+            @click:close="errorMessage = ''"
+          >
+            {{ errorMessage }}
+          </v-alert>
+
           <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="formData.nome"
                   label="Nome Completo *"
-                  :rules="[rules.required]"
+                  :rules="[rules.required, rules.name]"
                   prepend-icon="mdi-account"
                   variant="outlined"
                   required
+                  :error-messages="fieldErrors.nome"
+                  @blur="validateField('nome')"
                 ></v-text-field>
               </v-col>
               
@@ -51,6 +65,8 @@
                   prepend-icon="mdi-email"
                   variant="outlined"
                   required
+                  :error-messages="fieldErrors.email"
+                  @blur="validateField('email')"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -66,6 +82,8 @@
                   placeholder="(11) 99999-9999"
                   v-mask="'(##) #####-####'"
                   required
+                  :error-messages="fieldErrors.telefone"
+                  @blur="validateField('telefone')"
                 ></v-text-field>
               </v-col>
               
@@ -77,6 +95,8 @@
                   prepend-icon="mdi-briefcase"
                   variant="outlined"
                   required
+                  :error-messages="fieldErrors.cargo"
+                  @blur="validateField('cargo')"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -91,6 +111,8 @@
                   prepend-icon="mdi-calendar"
                   variant="outlined"
                   required
+                  :error-messages="fieldErrors.dataNascimento"
+                  @blur="validateField('dataNascimento')"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -100,11 +122,13 @@
                 <v-textarea
                   v-model="formData.mensagem"
                   label="Mensagem *"
-                  :rules="[rules.required]"
+                  :rules="[rules.required, rules.message]"
                   prepend-icon="mdi-message-text"
                   variant="outlined"
                   rows="4"
                   required
+                  :error-messages="fieldErrors.mensagem"
+                  @blur="validateField('mensagem')"
                 ></v-textarea>
               </v-col>
             </v-row>
@@ -142,11 +166,11 @@
                   size="large"
                   block
                   :loading="isLoading"
-                  :disabled="!valid"
+                  :disabled="!valid || isLoading"
                   class="text-h6 py-3"
                 >
                   <v-icon left>mdi-send</v-icon>
-                  Enviar Cadastro
+                  {{ isLoading ? 'Enviando...' : 'Enviar Cadastro' }}
                 </v-btn>
               </v-col>
             </v-row>
@@ -156,7 +180,7 @@
     </v-row>
 
     <!-- Success Dialog -->
-    <v-dialog v-model="successDialog" max-width="500">
+    <v-dialog v-model="successDialog" max-width="500" persistent>
       <v-card>
         <v-card-title class="text-center">
           <v-icon color="success" size="large" class="mr-2">mdi-check-circle</v-icon>
@@ -167,7 +191,7 @@
           <p>Seus dados foram cadastrados com sucesso. Nossa equipe entrará em contato em breve.</p>
         </v-card-text>
         <v-card-actions class="justify-center">
-          <v-btn color="primary" @click="successDialog = false">
+          <v-btn color="primary" @click="resetForm">
             Fechar
           </v-btn>
         </v-card-actions>
@@ -177,7 +201,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useLeadsStore } from '@/stores/leads'
 
 export default {
@@ -188,6 +212,15 @@ export default {
     const valid = ref(false)
     const isLoading = ref(false)
     const successDialog = ref(false)
+    const errorMessage = ref('')
+    const fieldErrors = reactive({
+      nome: '',
+      email: '',
+      telefone: '',
+      cargo: '',
+      dataNascimento: '',
+      mensagem: ''
+    })
 
     const formData = reactive({
       nome: '',
@@ -214,11 +247,19 @@ export default {
 
     const rules = {
       required: (value) => !!value || 'Campo obrigatório',
+      name: (value) => {
+        if (!value) return true
+        const trimmed = value.trim()
+        return trimmed.length >= 2 || 'Nome deve ter pelo menos 2 caracteres'
+      },
       email: (value) => {
+        if (!value) return true
         const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         return pattern.test(value) || 'E-mail inválido'
       },
       phone: (value) => {
+        if (!value) return true
+        // Validação para telefone brasileiro
         const pattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/
         return pattern.test(value) || 'Telefone deve estar no formato (XX) XXXXX-XXXX'
       },
@@ -226,7 +267,16 @@ export default {
         if (!value) return true
         const date = new Date(value)
         const today = new Date()
-        return date < today || 'Data deve ser anterior a hoje'
+        const minDate = new Date('1900-01-01')
+        
+        if (date >= today) return 'Data deve ser anterior a hoje'
+        if (date < minDate) return 'Data inválida'
+        return true
+      },
+      message: (value) => {
+        if (!value) return true
+        const trimmed = value.trim()
+        return trimmed.length >= 10 || 'Mensagem deve ter pelo menos 10 caracteres'
       }
     }
 
@@ -241,27 +291,86 @@ export default {
       formData.fbclid = urlParams.get('fbclid') || ''
     }
 
+    const validateField = (fieldName) => {
+      const value = formData[fieldName]
+      const rule = rules[fieldName] || rules.required
+      
+      const error = rule(value)
+      if (error === true) {
+        fieldErrors[fieldName] = ''
+      } else {
+        fieldErrors[fieldName] = error
+      }
+    }
+
+    const clearErrors = () => {
+      errorMessage.value = ''
+      Object.keys(fieldErrors).forEach(key => {
+        fieldErrors[key] = ''
+      })
+    }
+
+    const resetForm = () => {
+      // Limpar dados do formulário
+      Object.keys(formData).forEach(key => {
+        if (!key.startsWith('utm_') && key !== 'gclid' && key !== 'fbclid') {
+          formData[key] = ''
+        }
+      })
+      
+      // Limpar erros
+      clearErrors()
+      
+      // Reset do formulário Vuetify
+      form.value?.reset()
+      
+      // Fechar dialog
+      successDialog.value = false
+    }
+
     const submitForm = async () => {
       if (!valid.value) return
 
+      clearErrors()
       isLoading.value = true
+
       try {
-        const result = await leadsStore.createLead(formData)
+        // Preparar dados para envio
+        const leadData = {
+          nome: formData.nome.trim(),
+          email: formData.email.trim().toLowerCase(),
+          telefone: formData.telefone,
+          cargo: formData.cargo.trim(),
+          dataNascimento: formData.dataNascimento,
+          mensagem: formData.mensagem.trim(),
+          utm_source: formData.utm_source,
+          utm_medium: formData.utm_medium,
+          utm_campaign: formData.utm_campaign,
+          utm_term: formData.utm_term,
+          utm_content: formData.utm_content,
+          gclid: formData.gclid,
+          fbclid: formData.fbclid
+        }
+
+        const result = await leadsStore.createLead(leadData)
         
         if (result.success) {
           successDialog.value = true
-          // Limpar formulário
-          Object.keys(formData).forEach(key => {
-            if (!key.startsWith('utm_') && key !== 'gclid' && key !== 'fbclid') {
-              formData[key] = ''
-            }
-          })
-          form.value?.reset()
+          // Manter parâmetros UTM para próximos envios
+          extractUTMParameters()
         } else {
-          console.error('Erro ao cadastrar lead:', result.message)
+          errorMessage.value = result.message || 'Erro ao cadastrar lead'
         }
       } catch (error) {
         console.error('Erro ao cadastrar lead:', error)
+        
+        if (error.response?.data?.message) {
+          errorMessage.value = error.response.data.message
+        } else if (error.response?.status === 409) {
+          errorMessage.value = 'E-mail já cadastrado. Tente com outro e-mail.'
+        } else {
+          errorMessage.value = 'Erro ao enviar formulário. Tente novamente.'
+        }
       } finally {
         isLoading.value = false
       }
@@ -276,10 +385,14 @@ export default {
       valid,
       isLoading,
       successDialog,
+      errorMessage,
+      fieldErrors,
       formData,
       benefits,
       rules,
-      submitForm
+      submitForm,
+      validateField,
+      resetForm
     }
   }
 }
