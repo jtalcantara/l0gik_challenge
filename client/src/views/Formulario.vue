@@ -1,60 +1,36 @@
 <template>
-  <v-app>
-    <!-- Header -->
-    <v-app-bar color="#333" dark elevation="0" height="80">
-      <v-container>
-        <v-row align="center">
-          <v-col cols="auto">
-            <v-icon size="32" class="mr-3">mdi-rocket-launch</v-icon>
-            <span class="text-h5 font-weight-bold">Challenge L0gik</span>
-          </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="auto">
-            <v-btn color="white" variant="outlined" size="small">
-              <v-icon left>mdi-information</v-icon>
-              Sobre
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app-bar>
-
-    <!-- Main Content -->
-    <v-main>
-      <v-container fluid class="pa-0">
-        <!-- Hero Section -->
-        <v-row no-gutters class="hero-section">
-          <v-col cols="12" md="6" class="d-flex align-center justify-center pa-8">
-            <div class="text-center">
-              <v-icon size="80" color="white" class="mb-4">mdi-account-group</v-icon>
-              <h1 class="text-h3 font-weight-bold mb-4 text-white">
-                Cadastre-se e Transforme seu Negócio
-              </h1>
-              <p class="text-h6 text-white mb-6">
-                Preencha o formulário abaixo e receba informações exclusivas sobre nossos produtos e serviços.
-              </p>
-              <v-row justify="center">
-                <v-col v-for="benefit in benefits" :key="benefit" cols="auto">
-                  <v-chip
-                    color="white"
-                    variant="outlined"
-                    size="large"
-                    class="ma-1"
-                  >
-                    <v-icon left>mdi-check</v-icon>
-                    {{ benefit }}
-                  </v-chip>
-                </v-col>
-              </v-row>
-            </div>
-          </v-col>
-          
-          <v-col cols="12" md="6" class="pa-8">
-            <v-card elevation="12" class="pa-8" rounded="xl">
-              <v-card-title class="text-h4 text-center mb-6 pa-0">
-                <v-icon color="#333" size="large" class="mr-3">mdi-account-plus</v-icon>
-                <span class="text-h4 font-weight-bold">Cadastro de Lead</span>
-              </v-card-title>
+  <v-container fluid class="pa-0 full-height">
+    <!-- Hero Section -->
+    <v-row no-gutters class="hero-section full-height">
+      <!-- Título e descrição no topo -->
+      <v-col cols="12" class="pa-12 d-flex justify-center align-center">
+        <div class="text-center ">
+          <h1 class="text-h3 font-weight-bold mb-4 text-white">
+            Cadastre-se e Transforme seu Negócio
+          </h1>
+          <p class="text-h6 text-white mb-6">
+            Preencha o formulário abaixo e receba informações exclusivas sobre nossos produtos e serviços.
+          </p>
+          <v-chip
+            v-for="benefit in benefits"
+            :key="benefit"
+            color="white"
+            variant="outlined"
+            class="ma-1"
+          >
+            {{ benefit }}
+          </v-chip>
+        </div>
+      </v-col>
+      
+      <!-- Formulário centralizado -->
+      <v-col cols="12" class="d-flex justify-center pa-4">
+        <div class="form-container">
+        <v-card elevation="8" class="pa-6" rounded="lg">
+          <v-card-title class="text-h4 text-center mb-6">
+            <v-icon color="primary" size="large" class="mr-2">mdi-account-plus</v-icon>
+            Cadastro de Lead
+          </v-card-title>
 
           <!-- Alert de erro -->
           <v-alert
@@ -235,6 +211,7 @@
 
           </v-form>
         </v-card>
+        </div>
       </v-col>
     </v-row>
 
@@ -687,5 +664,40 @@ export default {
 .hero-section {
   background: linear-gradient(135deg, #333 0%, #555 100%);
   min-height: 100vh;
+}
+
+.full-height {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+/* Garantir que o formulário ocupe toda a tela quando isolado */
+.v-application {
+  height: 100vh;
+}
+
+/* Remover margens e padding padrão quando isolado */
+.v-main {
+  padding: 0 !important;
+}
+
+/* Container do formulário centralizado */
+.form-container {
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .form-container {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .form-container {
+    max-width: 900px;
+  }
 }
 </style>

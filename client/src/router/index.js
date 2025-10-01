@@ -4,9 +4,11 @@ import { useAuthStore } from '@/stores/auth'
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('@/views/Home.vue'),
-    meta: { title: 'Home' }
+    name: 'Admin',
+    component: () => import('@/views/Admin.vue'),
+    meta: { 
+      title: 'Painel Administrativo'
+    }
   },
   {
     path: '/formulario',
@@ -15,8 +17,8 @@ const routes = [
     meta: { title: 'Formulário de Cadastro' }
   },
   {
-    path: '/admin',
-    name: 'Admin',
+    path: '/admin/dashboard',
+    name: 'AdminDashboard',
     component: () => import('@/views/Admin.vue'),
     meta: { 
       title: 'Painel Administrativo',
@@ -62,7 +64,7 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/admin')
+    next('/')
   } else {
     next()
   }

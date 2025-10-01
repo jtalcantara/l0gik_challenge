@@ -1,8 +1,9 @@
 <template>
-  <v-container fluid class="pa-0">
-    <v-row no-gutters class="login-section">
-      <v-col cols="12" md="6" class="d-flex align-center justify-center pa-8">
-        <div class="text-center">
+  <v-container fluid class="pa-0 full-height">
+    <v-row no-gutters class="login-section full-height">
+      <!-- Título e descrição no topo -->
+      <v-col cols="12" class="pa-4">
+        <div class="text-center mb-8">
           <h1 class="text-h3 font-weight-bold mb-4 text-white">
             Painel Administrativo
           </h1>
@@ -13,7 +14,9 @@
         </div>
       </v-col>
       
-      <v-col cols="12" md="6" class="pa-8">
+      <!-- Formulário de login centralizado -->
+      <v-col cols="12" class="d-flex justify-center pa-4">
+        <div class="login-container">
         <v-card elevation="8" class="pa-6">
           <v-card-title class="text-h4 text-center mb-6">
             <v-icon color="primary" size="large" class="mr-2">mdi-login</v-icon>
@@ -68,16 +71,8 @@
             </p>
           </v-alert>
 
-          <v-btn
-            to="/"
-            color="secondary"
-            variant="outlined"
-            block
-          >
-            <v-icon left>mdi-arrow-left</v-icon>
-            Voltar ao Início
-          </v-btn>
         </v-card>
+        </div>
       </v-col>
     </v-row>
 
@@ -162,11 +157,32 @@ export default {
   min-height: 100vh;
 }
 
+.full-height {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+/* Container do login centralizado */
+.login-container {
+  max-width: 500px;
+  width: 100%;
+}
+
 .v-card {
   border-radius: 16px;
 }
 
 .v-btn {
   border-radius: 8px;
+}
+
+/* Garantir que o login ocupe toda a tela quando isolado */
+.v-application {
+  height: 100vh;
+}
+
+/* Remover margens e padding padrão quando isolado */
+.v-main {
+  padding: 0 !important;
 }
 </style>
