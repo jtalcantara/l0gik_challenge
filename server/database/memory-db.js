@@ -181,8 +181,35 @@ const insertInitialData = (callback) => {
 const getLeads = () => {
   return new Promise((resolve, reject) => {
     db.all("SELECT * FROM leads ORDER BY createdAt DESC", (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
+      if (err) {
+        reject(err);
+      } else {
+        // Reconstruir objeto tracking para cada lead
+        const leads = rows.map(row => {
+          return {
+            id: row.id,
+            nome: row.nome,
+            email: row.email,
+            telefone: row.telefone,
+            cargo: row.cargo,
+            dataNascimento: row.dataNascimento,
+            mensagem: row.mensagem,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
+            tracking: {
+              utm_source: row.utm_source,
+              utm_medium: row.utm_medium,
+              utm_campaign: row.utm_campaign,
+              utm_term: row.utm_term,
+              utm_content: row.utm_content,
+              gclid: row.gclid,
+              fbclid: row.fbclid
+            }
+          };
+        });
+        
+        resolve(leads);
+      }
     });
   });
 };
@@ -215,8 +242,35 @@ const addLead = (lead) => {
 const getLead = (leadId) => {
   return new Promise((resolve, reject) => {
     db.get("SELECT * FROM leads WHERE id = ?", [leadId], (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
+      if (err) {
+        reject(err);
+      } else if (row) {
+        // Reconstruir objeto tracking
+        const lead = {
+          id: row.id,
+          nome: row.nome,
+          email: row.email,
+          telefone: row.telefone,
+          cargo: row.cargo,
+          dataNascimento: row.dataNascimento,
+          mensagem: row.mensagem,
+          createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+          tracking: {
+            utm_source: row.utm_source,
+            utm_medium: row.utm_medium,
+            utm_campaign: row.utm_campaign,
+            utm_term: row.utm_term,
+            utm_content: row.utm_content,
+            gclid: row.gclid,
+            fbclid: row.fbclid
+          }
+        };
+        
+        resolve(lead);
+      } else {
+        resolve(null);
+      }
     });
   });
 };

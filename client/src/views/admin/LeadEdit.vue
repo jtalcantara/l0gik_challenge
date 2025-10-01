@@ -283,13 +283,13 @@ export default {
             cargo: lead.value.cargo,
             dataNascimento: lead.value.dataNascimento,
             mensagem: lead.value.mensagem,
-            utm_source: lead.value.tracking.utm_source || '',
-            utm_medium: lead.value.tracking.utm_medium || '',
-            utm_campaign: lead.value.tracking.utm_campaign || '',
-            utm_term: lead.value.tracking.utm_term || '',
-            utm_content: lead.value.tracking.utm_content || '',
-            gclid: lead.value.tracking.gclid || '',
-            fbclid: lead.value.tracking.fbclid || ''
+            utm_source: lead.value.tracking?.utm_source || '',
+            utm_medium: lead.value.tracking?.utm_medium || '',
+            utm_campaign: lead.value.tracking?.utm_campaign || '',
+            utm_term: lead.value.tracking?.utm_term || '',
+            utm_content: lead.value.tracking?.utm_content || '',
+            gclid: lead.value.tracking?.gclid || '',
+            fbclid: lead.value.tracking?.fbclid || ''
           })
         }
       } catch (error) {
