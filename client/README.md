@@ -508,40 +508,6 @@ dist/
 └── 🖼️ favicon.ico      # Favicon
 ```
 
-## 🐛 Troubleshooting
-
-### Problemas Comuns
-
-#### Erro de CORS
-```javascript
-// Verificar configuração do proxy no vite.config.js
-server: {
-  proxy: {
-    '/api': {
-      target: 'http://localhost:3000',
-      changeOrigin: true
-    }
-  }
-}
-```
-
-#### Erro de Autenticação
-```javascript
-// Verificar se o token está sendo enviado
-const token = localStorage.getItem('token')
-if (!token) {
-  // Redirecionar para login
-}
-```
-
-#### Problemas de Build
-```bash
-# Limpar cache e reinstalar
-rm -rf node_modules
-rm package-lock.json
-npm install
-```
-
 ---
 
 <div align="center">

@@ -12,7 +12,6 @@ Sistema completo de cadastro e gestão de leads com formulário público, API RE
 - [API Reference](#-api-reference)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Deploy](#-deploy)
-- [Contribuição](#-contribuição)
 
 ## 🎯 Visão Geral
 
@@ -350,30 +349,6 @@ export default defineConfig({
   }
 })
 ```
-
-## 🐛 Troubleshooting
-
-### Problemas Comuns
-
-#### Frontend não conecta com API
-- Verifique se o backend está rodando na porta 3000
-- Confirme a configuração do proxy no `vite.config.js`
-
-#### Erro de autenticação
-- Verifique se o token JWT está sendo enviado corretamente
-- Confirme se o usuário tem as permissões necessárias
-
-#### Problemas de build
-- Limpe o cache: `npm run clean` (se disponível)
-- Reinstale as dependências: `rm -rf node_modules && npm install`
-
-## 🤝 Contribuição
-
-1. **Fork** o projeto
-2. Crie uma **branch** para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um **Pull Request**
 
 ### Padrões de Código
 - Use **ESLint** e **Prettier** para formatação

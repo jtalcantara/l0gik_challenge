@@ -809,37 +809,6 @@ router.post('/leads', validateSchema(leadSchema), createLead)
 | 404 | Não encontrado |
 | 500 | Erro interno do servidor |
 
-## 🐛 Troubleshooting
-
-### Problemas Comuns
-
-#### Erro de CORS
-```javascript
-// Verificar configuração CORS
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}))
-```
-
-#### Erro de Autenticação
-```javascript
-// Verificar se o token está sendo enviado corretamente
-const authHeader = req.headers['authorization']
-if (!authHeader || !authHeader.startsWith('Bearer ')) {
-  // Erro de formato
-}
-```
-
-#### Problemas de Banco
-```javascript
-// Verificar se os arquivos JSON existem
-const filePath = path.join(__dirname, 'data', 'leads.json')
-if (!fs.existsSync(filePath)) {
-  // Criar arquivo se não existir
-}
-```
-
 ---
 
 <div align="center">
