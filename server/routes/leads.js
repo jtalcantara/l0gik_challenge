@@ -1,15 +1,14 @@
 const express = require('express');
-const { body, validationResult, query } = require('express-validator');
-const { authenticateToken } = require('../middleware/auth');
-const Permissions = require('../middleware/permissions');
+const { authenticateToken } = require('@/middleware/auth');
+const Permissions = require('@/middleware/permissions');
+const { leadSchema, querySchema, validateSchema, validateQuery } = require('@/schemas/validation');
 const { 
   getLeads, 
   addLead, 
   getLeadById, 
   updateLead, 
   deleteLead 
-} = require('../database');
-const { success, error } = require('../utils/http-responses');
+} = require('@/database');
 const { v4: uuidv4 } = require('uuid');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const XLSX = require('xlsx');
@@ -17,27 +16,12 @@ const path = require('path');
 
 const router = express.Router();
 
-// Validações para lead
-const leadValidation = [
-  body('nome').notEmpty().withMessage('Nome é obrigatório'),
-  body('email').isEmail().withMessage('Email deve ser válido'),
-  body('telefone').matches(/^\(\d{2}\)\s\d{4,5}-\d{4}$/).withMessage('Telefone deve estar no formato (XX) XXXXX-XXXX'),
-  body('cargo').notEmpty().withMessage('Cargo é obrigatório'),
-  body('dataNascimento').isISO8601().withMessage('Data de nascimento deve ser válida'),
-  body('mensagem').notEmpty().withMessage('Mensagem é obrigatória')
-];
+// Validações para lead (agora usando Yup)
+const leadValidation = validateSchema(leadSchema);
 
 // GET /api/leads - Listar leads (admin e operador podem ver)
-router.get('/', authenticateToken, Permissions.checkPermissionRead, [
-  query('page').optional().isInt({ min: 1 }).withMessage('Página deve ser um número positivo'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limite deve ser entre 1 e 100'),
-  query('search').optional().isString().withMessage('Busca deve ser uma string')
-], (req, res) => {
+router.get('/', authenticateToken, Permissions.checkPermissionRead, validateQuery(querySchema), (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return error(res, { validation: errors.array() }, 400);
-    }
 
     let leads = getLeads();
 
@@ -83,10 +67,6 @@ router.get('/', authenticateToken, Permissions.checkPermissionRead, [
 // POST /api/leads - Criar lead (público)
 router.post('/', leadValidation, (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return error(res, { validation: errors.array() }, 400);
-    }
 
     // Verificar se email já existe
     const existingLead = getLeads().find(lead => lead.email === req.body.email);
@@ -142,10 +122,6 @@ router.get('/:id', authenticateToken, Permissions.checkPermissionRead, (req, res
 // PUT /api/leads/:id - Atualizar lead (apenas admin pode editar)
 router.put('/:id', authenticateToken, Permissions.checkPermissionWrite, leadValidation, (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return validationErrorResponse(res, errors.array());
-    }
 
     const existingLead = getLeadById(req.params.id);
     if (!existingLead) {
@@ -308,20 +284,8 @@ router.get('/export/excel', authenticateToken, Permissions.checkPermissionExport
 });
 
 // GET /api/leads/limited - Listar leads com informações limitadas (apenas operador)
-router.get('/limited', authenticateToken, Permissions.checkPermissionRead, [
-  query('page').optional().isInt({ min: 1 }).withMessage('Página deve ser um número positivo'),
-  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limite deve ser entre 1 e 50'),
-  query('search').optional().isString().withMessage('Busca deve ser uma string')
-], (req, res) => {
+router.get('/limited', authenticateToken, Permissions.checkPermissionRead, validateQuery(querySchema), (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Parâmetros inválidos',
-        errors: errors.array()
-      });
-    }
 
     let leads = getLeads();
 

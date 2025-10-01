@@ -1,70 +1,51 @@
+// Carregar aliases primeiro
+require('./aliases');
+
+process.loadEnvFile();
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const path = require('path');
-const fs = require('fs');
 
-// Importar rotas
-const leadsRoutes = require('./routes/leads');
-const authRoutes = require('./routes/auth');
+// Importar rotas centralizadas
+const routes = require('@/routes');
+const { HttpResponses } = require('@/utils/http-responses');
+const { errorHandler } = require('@/middleware/error-handler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware de segurança
-app.use(helmet());
-
 // CORS
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000', 'http://localhost:5173'],
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
-// Middleware para parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+// Middlewares
 
-// Middleware de logging
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
-});
+app.use(helmet());
 
-// Rotas da API
-app.use('/api/auth', authRoutes);
-app.use('/api/leads', leadsRoutes);
+app.use(express.json({ limit: '2mb' }));         // Faz o parse do corpo da requisição e limita o tamanho máximo do payload
 
-// Servir arquivos estáticos do frontend em produção
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-  });
-}
+app.use(express.urlencoded({ extended: true })); // Converte os dados de URL em objetos JavaScript
 
-// Middleware de tratamento de erros
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    success: false, 
-    message: 'Erro interno do servidor',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+app.use('/api', routes);
 
-// Middleware para rotas não encontradas
+// Route Not Found
 app.use('*', (req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    message: 'Rota não encontrada' 
-  });
+  HttpResponses.error(res, [new Error('Rota não encontrada')], 404);
 });
+
+// Middleware de tratamento de erros (deve ser o último)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 API: http://localhost:${PORT}/api`);
+
+  // Só mostra a URL local em desenvolvimento
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`🔗 API: http://localhost:${PORT}/api`);
+  }
 });

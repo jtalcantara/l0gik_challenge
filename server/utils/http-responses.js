@@ -16,10 +16,10 @@ const success = (res, data = {}, statusCode = 200) => {
 /**
  * Resposta de erro padronizada
  * @param {Object} res - Objeto response do Express
- * @param {Object} errors - Detalhes dos erros
- * @param {number} statusCode - Código de status HTTP (padrão: 400)
+ * @param {Object} errors - Detalhes do erro ou mensagem de erro
+ * @param {number} statusCode - Código de status HTTP (padrão: 500)
  */
-const error = (res, errors = {}, statusCode = 400) => {
+const error = (res, errors = [new Error('Erro interno do servidor')], statusCode = 500) => {
   return res.status(statusCode).json({
     success: false,
     errors
@@ -27,6 +27,8 @@ const error = (res, errors = {}, statusCode = 400) => {
 };
 
 module.exports = {
-  success,
-  error
+  HttpResponses: {
+    success,
+    error
+  }
 };

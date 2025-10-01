@@ -1,108 +1,79 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { body, validationResult } = require('express-validator');
-const { generateToken } = require('../middleware/auth');
-const { getUserByUsername, addUser } = require('../database');
-const { success, error } = require('../utils/http-responses');
+const { generateToken } = require('@/middleware/auth');
+const { getUserByUsername, addUser } = require('@/database');
+const { HttpResponses } = require('@/utils/http-responses');
+const { loginSchema, registerSchema, validateSchema } = require('@/schemas/validation');
 
 const router = express.Router();
 
 // POST /api/auth/login
-router.post('/login', [
-  body('username').notEmpty().withMessage('Username é obrigatório'),
-  body('password').isLength({ min: 6 }).withMessage('Senha deve ter pelo menos 6 caracteres')
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
+router.post('/login', validateSchema(loginSchema), async (req, res) => {
+  const { username, password } = req.body;
 
-    if (!errors.isEmpty()) {
-      return error(res, { validation: errors.array() }, 400);
-    }
+  const user = getUserByUsername(username);
 
-    const { username, password } = req.body;
+  if (!user)
+    return HttpResponses.error(res, [new Error('Credenciais inválidas')], 401);
 
-    const user = getUserByUsername(username);
-    if (!user) {
-      return error(res, { message: 'Credenciais inválidas' }, 401);
-    }
+  const isValidPassword = await bcrypt.compare(password, user.password);
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return error(res, { message: 'Credenciais inválidas' }, 401);
-    }
+  if (!isValidPassword)
+    return HttpResponses.error(res, [new Error('Credenciais inválidas')], 401);
 
-    const token = generateToken({
+  const token = generateToken({
+    id: user.id,
+    username: user.username,
+    role: user.role
+  });
+
+  return HttpResponses.success(res, {
+    token,
+    user: {
       id: user.id,
       username: user.username,
       role: user.role
-    });
-
-    return success(res, {
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role
-      }
-    });
-
-  } catch (err) {
-    console.error('Erro no login:', err);
-    return error(res, { message: 'Erro interno do servidor' }, 500);
-  }
+    }
+  });
 });
 
 // POST /api/auth/register (apenas para desenvolvimento)
-router.post('/register', [
-  body('username').isLength({ min: 3 }).withMessage('Username deve ter pelo menos 3 caracteres'),
-  body('password').isLength({ min: 6 }).withMessage('Senha deve ter pelo menos 6 caracteres')
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return error(res, { validation: errors.array() }, 400);
-    }
+router.post('/register', validateSchema(registerSchema), async (req, res) => {
+  const { username, password } = req.body;
 
-    const { username, password } = req.body;
+  // Verificar se usuário já existe
+  const existingUser = getUserByUsername(username);
+  if (existingUser) {
+    return HttpResponses.error(res, { message: 'Username já existe' }, 409);
+  }
 
-    // Verificar se usuário já existe
-    const existingUser = getUserByUsername(username);
-    if (existingUser) {
-      return error(res, { message: 'Username já existe' }, 409);
-    }
+  // Hash da senha
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Hash da senha
-    const hashedPassword = await bcrypt.hash(password, 10);
+  // Criar novo usuário
+  const newUser = {
+    id: Date.now().toString(),
+    username,
+    password: hashedPassword,
+    role: 'admin'
+  };
 
-    // Criar novo usuário
-    const newUser = {
-      id: Date.now().toString(),
-      username,
-      password: hashedPassword,
-      role: 'admin'
-    };
-
-    if (addUser(newUser)) {
-      return success(res, {
-        user: {
-          id: newUser.id,
-          username: newUser.username,
-          role: newUser.role
-        }
-      }, 201);
-    } else {
-      return error(res, { message: 'Erro ao criar usuário' }, 500);
-    }
-
-  } catch (err) {
-    console.error('Erro no registro:', err);
-    return error(res, { message: 'Erro interno do servidor' }, 500);
+  if (addUser(newUser)) {
+    return HttpResponses.success(res, {
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        role: newUser.role
+      }
+    }, 201);
+  } else {
+    return HttpResponses.error(res, { message: 'Erro ao criar usuário' }, 500);
   }
 });
 
 // GET /api/auth/verify
 router.get('/verify', (req, res) => {
-  return success(res, { message: 'Token válido' });
+  return HttpResponses.success(res, { message: 'Token válido' });
 });
 
 module.exports = router;

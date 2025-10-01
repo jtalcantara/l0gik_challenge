@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { error } = require('../utils/response');
+const { error } = require('@/utils/http-responses');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'challenge_l0gik_secret_key_2024';
 

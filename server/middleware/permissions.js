@@ -1,5 +1,5 @@
-const { error } = require('../utils/http-responses');
-const { getRolePermissions } = require('../database');
+const { error } = require('@/utils/http-responses');
+const { getRolePermissions } = require('@/database');
 
 
 // Middleware para verificar permissão de leitura
