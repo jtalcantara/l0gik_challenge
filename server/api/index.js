@@ -24,8 +24,10 @@ app.use(helmet());
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rota para a raiz
-app.get('/', (req, res) => {
+app.use('/api', routes);
+
+// Rota para informações da API
+app.get('/api', (req, res) => {
   res.json({
     success: true,
     message: 'Challenge L0gik API',
@@ -42,8 +44,6 @@ app.get('/', (req, res) => {
     ]
   });
 });
-
-app.use('/api', routes);
 
 // Route Not Found
 app.use('*', (req, res) => {
