@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "vercel --prod --yes",
+    "deploy:preview": "vercel --yes"
   },
   "dependencies": {
     "vue": "^3.3.8",
