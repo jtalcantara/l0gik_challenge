@@ -82,6 +82,11 @@
               <strong>Username:</strong> admin<br>
               <strong>Senha:</strong> password
             </p>
+            
+            <p class="mb-0">
+              <strong>Username:</strong> operador<br>
+              <strong>Senha:</strong> password
+            </p>
           </v-alert>
 
         </v-card>
