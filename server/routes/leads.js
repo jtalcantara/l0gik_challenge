@@ -10,8 +10,6 @@ const {
   deleteLead
 } = require('../database/memory-db');
 const { v4: uuidv4 } = require('uuid');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const path = require('path');
 const { HttpResponses } = require('../utils/http-responses');
 
 const router = express.Router();
@@ -165,48 +163,84 @@ router.delete('/:id', authenticateToken, Permissions.requireAdmin, async (req, r
 
 // GET /api/leads/export/csv - Exportar leads em CSV, qualquer um com permissao de exportacao pode exportar
 router.get('/export/csv', authenticateToken, Permissions.checkPermissionExport, async (req, res) => {
-  const leads = await getLeads();
+  try {
+    const leads = await getLeads();
 
-  if (leads.length === 0) {
-    return HttpResponses.error(res, new Error('Nenhum lead encontrado para exportar'), 404);
+    if (leads.length === 0) {
+      return HttpResponses.error(res, new Error('Nenhum lead encontrado para exportar'), 404);
+    }
+
+    // Preparar dados CSV
+    const csvData = leads.map(lead => ({
+      nome: lead.nome,
+      email: lead.email,
+      telefone: lead.telefone,
+      cargo: lead.cargo,
+      dataNascimento: lead.dataNascimento,
+      mensagem: lead.mensagem,
+      utm_source: lead.tracking?.utm_source || '',
+      utm_medium: lead.tracking?.utm_medium || '',
+      utm_campaign: lead.tracking?.utm_campaign || '',
+      utm_term: lead.tracking?.utm_term || '',
+      utm_content: lead.tracking?.utm_content || '',
+      gclid: lead.tracking?.gclid || '',
+      fbclid: lead.tracking?.fbclid || '',
+      createdAt: lead.createdAt
+    }));
+
+    // Criar cabeçalho CSV
+    const headers = [
+      'Nome',
+      'Email', 
+      'Telefone',
+      'Cargo',
+      'Data de Nascimento',
+      'Mensagem',
+      'UTM Source',
+      'UTM Medium',
+      'UTM Campaign',
+      'UTM Term',
+      'UTM Content',
+      'GCLID',
+      'FBCLID',
+      'Data de Criação'
+    ];
+
+    // Converter para CSV
+    let csvContent = headers.join(',') + '\n';
+    
+    csvData.forEach(lead => {
+      const row = [
+        `"${lead.nome}"`,
+        `"${lead.email}"`,
+        `"${lead.telefone}"`,
+        `"${lead.cargo}"`,
+        `"${lead.dataNascimento}"`,
+        `"${lead.mensagem.replace(/"/g, '""')}"`, // Escapar aspas duplas
+        `"${lead.utm_source}"`,
+        `"${lead.utm_medium}"`,
+        `"${lead.utm_campaign}"`,
+        `"${lead.utm_term}"`,
+        `"${lead.utm_content}"`,
+        `"${lead.gclid}"`,
+        `"${lead.fbclid}"`,
+        `"${lead.createdAt}"`
+      ];
+      csvContent += row.join(',') + '\n';
+    });
+
+    // Configurar headers para download
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="leads.csv"');
+    res.setHeader('Cache-Control', 'no-cache');
+    
+    // Enviar CSV
+    res.send(csvContent);
+    
+  } catch (error) {
+    console.error('Erro ao exportar CSV:', error);
+    return HttpResponses.error(res, new Error('Erro interno do servidor'), 500);
   }
-
-  const csvWriter = createCsvWriter({
-    path: path.join(__dirname, '../data/leads_export.csv'),
-    header: [
-      { id: 'nome', title: 'Nome' },
-      { id: 'email', title: 'Email' },
-      { id: 'telefone', title: 'Telefone' },
-      { id: 'cargo', title: 'Cargo' },
-      { id: 'dataNascimento', title: 'Data de Nascimento' },
-      { id: 'mensagem', title: 'Mensagem' },
-      { id: 'utm_source', title: 'UTM Source' },
-      { id: 'utm_medium', title: 'UTM Medium' },
-      { id: 'utm_campaign', title: 'UTM Campaign' },
-      { id: 'utm_term', title: 'UTM Term' },
-      { id: 'utm_content', title: 'UTM Content' },
-      { id: 'gclid', title: 'GCLID' },
-      { id: 'fbclid', title: 'FBCLID' },
-      { id: 'createdAt', title: 'Data de Criação' }
-    ]
-  });
-
-  const csvData = leads.map(lead => ({
-    ...lead,
-    utm_source: lead.tracking.utm_source,
-    utm_medium: lead.tracking.utm_medium,
-    utm_campaign: lead.tracking.utm_campaign,
-    utm_term: lead.tracking.utm_term,
-    utm_content: lead.tracking.utm_content,
-    gclid: lead.tracking.gclid,
-    fbclid: lead.tracking.fbclid
-  }));
-
-  csvWriter.writeRecords(csvData).then(() => {
-    res.download(path.join(__dirname, '../data/leads_export.csv'), 'leads.csv');
-  });
-
-
 });
 
 // GET /api/leads/limited - Listar leads com informações limitadas (apenas operador)
