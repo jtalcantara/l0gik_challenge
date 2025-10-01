@@ -118,7 +118,7 @@ export const useLeadsStore = defineStore('leads', {
     async updateLead(id, leadData) {
       this.isLoading = true
       try {
-        const response = await axios.put(`/leads/${id}`, leadData)
+        const response = await axios.patch(`/leads/${id}`, leadData)
         
         if (response.data.success) {
           const index = this.leads.findIndex(lead => lead.id === id)
@@ -157,14 +157,14 @@ export const useLeadsStore = defineStore('leads', {
 
     async exportLeads(format = 'csv') {
       try {
-        const response = await axios.get(`/leads/export/${format}`, {
+        const response = await axios.get(`/leads/export/csv`, {
           responseType: 'blob'
         })
         
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `leads.${format}`)
+        link.setAttribute('download', `leads.csv`)
         document.body.appendChild(link)
         link.click()
         link.remove()

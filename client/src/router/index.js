@@ -60,14 +60,34 @@ const router = createRouter({
 })
 
 // Guard de autenticação
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/')
-  } else {
-    next()
+  // Se a rota requer autenticação
+  if (to.meta.requiresAuth) {
+    // Verificar se há token
+    if (!authStore.isAuthenticated) {
+      console.warn('Rota protegida acessada sem autenticação')
+      next('/')
+      return
+    }
+    
+    // Verificar se o token ainda é válido
+    try {
+      const isValid = await authStore.verifyToken()
+      if (!isValid) {
+        console.warn('Token inválido, redirecionando para login')
+        next('/')
+        return
+      }
+    } catch (error) {
+      console.error('Erro ao verificar token:', error)
+      next('/')
+      return
+    }
   }
+  
+  next()
 })
 
 export default router

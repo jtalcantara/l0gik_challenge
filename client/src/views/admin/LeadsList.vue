@@ -23,20 +23,11 @@
             <v-col cols="12" md="6" class="d-flex justify-end align-center">
               <v-btn
                 color="success"
-                class="mr-2"
                 @click="exportLeads('csv')"
                 :loading="isExporting"
               >
-                <v-icon left>mdi-file-excel</v-icon>
+                <v-icon left>mdi-file-download</v-icon>
                 Exportar CSV
-              </v-btn>
-              <v-btn
-                color="info"
-                @click="exportLeads('excel')"
-                :loading="isExporting"
-              >
-                <v-icon left>mdi-file-excel</v-icon>
-                Exportar Excel
               </v-btn>
             </v-col>
           </v-row>
@@ -76,6 +67,48 @@
               <div>
                 <v-icon size="small" class="mr-1">mdi-phone</v-icon>
                 {{ item.telefone }}
+              </div>
+            </template>
+
+            <template v-slot:item.cargo="{ item }">
+              <div>
+                <v-chip size="small" color="primary" variant="outlined">
+                  {{ item.cargo }}
+                </v-chip>
+              </div>
+            </template>
+
+            <template v-slot:item.dataNascimento="{ item }">
+              <div>
+                {{ formatDate(item.dataNascimento) }}
+              </div>
+            </template>
+
+            <template v-slot:item.tracking.utm_source="{ item }">
+              <div>
+                <v-chip 
+                  v-if="item.tracking.utm_source" 
+                  size="small" 
+                  color="success" 
+                  variant="outlined"
+                >
+                  {{ item.tracking.utm_source }}
+                </v-chip>
+                <span v-else class="text-grey">-</span>
+              </div>
+            </template>
+
+            <template v-slot:item.tracking.utm_campaign="{ item }">
+              <div>
+                <v-chip 
+                  v-if="item.tracking.utm_campaign" 
+                  size="small" 
+                  color="info" 
+                  variant="outlined"
+                >
+                  {{ item.tracking.utm_campaign }}
+                </v-chip>
+                <span v-else class="text-grey">-</span>
               </div>
             </template>
 
@@ -168,6 +201,10 @@ export default {
       { title: 'Nome', key: 'nome', sortable: false },
       { title: 'Email', key: 'email', sortable: false },
       { title: 'Telefone', key: 'telefone', sortable: false },
+      { title: 'Cargo', key: 'cargo', sortable: false },
+      { title: 'Data de Nascimento', key: 'dataNascimento', sortable: false },
+      { title: 'UTM Source', key: 'tracking.utm_source', sortable: false },
+      { title: 'UTM Campaign', key: 'tracking.utm_campaign', sortable: false },
       { title: 'Data de Cadastro', key: 'createdAt', sortable: false },
       { title: 'Ações', key: 'actions', sortable: false, width: '150px' }
     ]
@@ -231,6 +268,7 @@ export default {
         await leadsStore.exportLeads(format)
       } catch (error) {
         console.error('Erro ao exportar leads:', error)
+        // Aqui você pode adicionar uma notificação de erro se desejar
       } finally {
         isExporting.value = false
       }

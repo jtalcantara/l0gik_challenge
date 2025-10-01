@@ -24,8 +24,8 @@ export const useAuthStore = defineStore('auth', {
           this.user = response.data.data.user
           localStorage.setItem('token', this.token)
           
-          // Configurar token no axios
-          axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
+          // Configurar token no axios (token já vem com Bearer da API)
+          axios.defaults.headers.common['Authorization'] = this.token
           
           return { success: true, message: response.data.message }
         } else {
@@ -50,10 +50,11 @@ export const useAuthStore = defineStore('auth', {
       if (!this.token) return false
       
       try {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
+        axios.defaults.headers.common['Authorization'] = this.token
         const response = await axios.get(`/auth/verify`)
         return response.data.success
       } catch (error) {
+        console.warn('Token inválido, fazendo logout')
         this.logout()
         return false
       }
@@ -61,8 +62,11 @@ export const useAuthStore = defineStore('auth', {
 
     initializeAuth() {
       if (this.token) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-        this.verifyToken()
+        axios.defaults.headers.common['Authorization'] = this.token
+        // Verificar token em background sem bloquear a UI
+        this.verifyToken().catch(() => {
+          console.warn('Falha na verificação do token')
+        })
       }
     }
   }
