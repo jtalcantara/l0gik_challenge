@@ -33,19 +33,35 @@
           </v-col>
         </v-row>
 
-        <!-- Tabela de Leads -->
-        <v-data-table
-          :headers="headers"
-          :items="leads"
-          :loading="isLoading"
-          :items-per-page="pagination.itemsPerPage"
-          :page="pagination.currentPage"
-          :server-items-length="pagination.totalItems"
-          :items-per-page-options="[5, 10, 20, 100]"
-          @update:page="handlePageChange"
-          @update:items-per-page="handleItemsPerPageChange"
-          class="elevation-1"
+        <!-- Dica de scroll horizontal para mobile -->
+        <v-alert
+          v-if="isMobile && showScrollHint"
+          type="info"
+          variant="tonal"
+          density="compact"
+          class="mb-4"
+          closable
+          @click:close="hideScrollHint"
         >
+          <v-icon start>mdi-gesture-swipe-horizontal</v-icon>
+          Deslize horizontalmente para ver mais dados
+        </v-alert>
+
+        <!-- Tabela de Leads -->
+        <div class="table-container" ref="tableContainer">
+          <v-data-table
+            :headers="headers"
+            :items="leads"
+            :loading="isLoading"
+            :items-per-page="pagination.itemsPerPage"
+            :page="pagination.currentPage"
+            :server-items-length="pagination.totalItems"
+            :items-per-page-options="[5, 10, 20, 100]"
+            @update:page="handlePageChange"
+            @update:items-per-page="handleItemsPerPageChange"
+            class="elevation-1 responsive-table"
+            :mobile-breakpoint="0"
+          >
             <template v-slot:item.nome="{ item }">
               <div class="d-flex align-center">
                 <v-avatar color="primary" size="32" class="mr-3">
@@ -146,6 +162,7 @@
               ></v-btn>
             </template>
           </v-data-table>
+        </div>
       </v-col>
     </v-row>
 
@@ -174,7 +191,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLeadsStore } from '@/stores/leads'
 
@@ -189,6 +206,9 @@ export default {
     const searchQuery = ref('')
     const deleteDialog = ref(false)
     const leadToDelete = ref(null)
+    const isMobile = ref(false)
+    const showScrollHint = ref(true)
+    const tableContainer = ref(null)
 
     const headers = [
       { title: 'Nome', key: 'nome', sortable: false },
@@ -278,8 +298,31 @@ export default {
       })
     }
 
+    const checkMobile = () => {
+      isMobile.value = window.innerWidth <= 960
+    }
+
+    const hideScrollHint = () => {
+      showScrollHint.value = false
+      localStorage.setItem('hideScrollHint', 'true')
+    }
+
+    const setupScrollHint = () => {
+      const hideHint = localStorage.getItem('hideScrollHint')
+      if (hideHint === 'true') {
+        showScrollHint.value = false
+      }
+    }
+
     onMounted(() => {
       fetchLeads()
+      checkMobile()
+      setupScrollHint()
+      window.addEventListener('resize', checkMobile)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', checkMobile)
     })
 
     return {
@@ -287,6 +330,9 @@ export default {
       isExporting,
       searchQuery,
       deleteDialog,
+      isMobile,
+      showScrollHint,
+      tableContainer,
       headers,
       leads,
       pagination,
@@ -299,7 +345,8 @@ export default {
       deleteLead,
       confirmDelete,
       exportLeads,
-      formatDate
+      formatDate,
+      hideScrollHint
     }
   }
 }
@@ -312,5 +359,102 @@ export default {
 
 .v-btn {
   border-radius: 4px;
+}
+
+/* Container da tabela com scroll horizontal */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para a tabela responsiva */
+.responsive-table {
+  min-width: 1000px; /* Largura mínima para evitar compressão excessiva */
+}
+
+/* Melhorar a aparência das células em mobile */
+.responsive-table :deep(.v-data-table__td) {
+  white-space: nowrap;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+}
+
+.responsive-table :deep(.v-data-table__th) {
+  white-space: nowrap;
+  padding: 16px;
+  font-weight: 600;
+  background-color: #f5f5f5;
+}
+
+/* Ajustar botões de ação para mobile */
+.responsive-table :deep(.v-data-table__td:last-child) {
+  min-width: 120px;
+}
+
+.responsive-table :deep(.v-btn) {
+  min-width: 32px;
+  height: 32px;
+}
+
+/* Melhorar visualização dos chips */
+.responsive-table :deep(.v-chip) {
+  font-size: 0.75rem;
+  height: 24px;
+}
+
+/* Ajustar avatar para mobile */
+.responsive-table :deep(.v-avatar) {
+  flex-shrink: 0;
+}
+
+/* Indicador visual de scroll horizontal */
+.table-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.table-container:hover::after {
+  opacity: 1;
+}
+
+/* Melhorar responsividade em telas muito pequenas */
+@media (max-width: 600px) {
+  .responsive-table {
+    min-width: 800px;
+  }
+  
+  .responsive-table :deep(.v-data-table__td),
+  .responsive-table :deep(.v-data-table__th) {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .responsive-table :deep(.v-btn) {
+    min-width: 28px;
+    height: 28px;
+  }
+  
+  .responsive-table :deep(.v-chip) {
+    font-size: 0.7rem;
+    height: 20px;
+  }
+}
+
+/* Ajustar barra de ações para mobile */
+@media (max-width: 960px) {
+  .d-flex.justify-end {
+    justify-content: flex-start !important;
+    margin-top: 16px;
+  }
 }
 </style>
