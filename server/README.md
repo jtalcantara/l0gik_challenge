@@ -840,13 +840,6 @@ if (!fs.existsSync(filePath)) {
 }
 ```
 
-## 📞 Suporte
-
-Para dúvidas ou problemas:
-- 📖 **Documentação**: README principal do projeto
-- 🐛 **Issues**: GitHub Issues
-- 💬 **Discussões**: GitHub Discussions
-
 ---
 
 <div align="center">

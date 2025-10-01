@@ -390,14 +390,6 @@ Este projeto está sob a licença **MIT**. Veja o arquivo `LICENSE` para mais de
 **Challenge L0gik** - Sistema de Gestão de Leads
 - **Desenvolvedor**: Jonathan Alcantara
 - **Tecnologias**: Vue.js 3, Node.js, Express.js
-- **Ano**: 2025
-
-## 📞 Suporte
-
-Para dúvidas ou problemas:
-- 📧 **Email**: [seu-email@exemplo.com]
-- 🐛 **Issues**: [GitHub Issues]
-- 📖 **Documentação**: Consulte os READMEs específicos de cada módulo
 
 ---
 
