@@ -224,8 +224,8 @@
       </v-col>
     </v-row>
 
-    <!-- Seção de Testes UTM (apenas em desenvolvimento) -->
-    <v-row v-if="isDev" no-gutters class="hero-section">
+    <!-- Seção de Testes UTM -->
+    <v-row no-gutters class="hero-section">
       <v-col cols="12" class="d-flex justify-center pa-2 pa-md-4">
         <div class="form-container">
           <v-card elevation="8" class="pa-4 pa-md-6" rounded="lg">
@@ -623,7 +623,6 @@ export default {
       resetForm,
       formatPhone,
       hasUTMParameters,
-      isDev: import.meta.env.DEV,
       testLinks,
       getTestIcon,
       getTestIconColor,
