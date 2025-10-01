@@ -24,6 +24,25 @@ app.use(helmet());
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Rota para a raiz
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Challenge L0gik API',
+    version: '1.0.0',
+    endpoints: [
+      'GET /api/leads',
+      'POST /api/leads', 
+      'GET /api/leads/:id',
+      'PATCH /api/leads/:id',
+      'DELETE /api/leads/:id',
+      'POST /api/auth/login',
+      'GET /api/auth/verify',
+      'POST /api/auth/register'
+    ]
+  });
+});
+
 app.use('/api', routes);
 
 // Route Not Found
