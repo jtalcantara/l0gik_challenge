@@ -7,19 +7,20 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
+// Importar configurações centralizadas
+const config = require('@/config');
+
 // Importar rotas centralizadas
 const routes = require('@/routes');
 const { HttpResponses } = require('@/utils/http-responses');
 const { errorHandler } = require('@/middleware/error-handler');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // CORS
-
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
+  origin: config.cors.origin,
+  credentials: config.cors.credentials
 }));
 
 // Middlewares
@@ -40,12 +41,12 @@ app.use('*', (req, res) => {
 // Middleware de tratamento de erros (deve ser o último)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-  console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+app.listen(config.server.port, config.server.host, () => {
+  console.log(`🚀 Servidor rodando na porta ${config.server.port}`);
+  console.log(`📊 Ambiente: ${config.server.nodeEnv}`);
 
   // Só mostra a URL local em desenvolvimento
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`🔗 API: http://localhost:${PORT}/api`);
+  if (config.server.nodeEnv !== 'production') {
+    console.log(`🔗 API: http://${config.server.host}:${config.server.port}/api`);
   }
 });

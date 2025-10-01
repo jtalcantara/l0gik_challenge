@@ -58,11 +58,25 @@ const checkPermissionExport = (req, res, next) => {
   next();
 };
 
+//Verifica se é admin
+const requireAdmin = (req, res, next) => {
+  if (!req.user) {
+    return error(res, { message: 'Usuário não autenticado' }, 401);
+  }
+  if (req.user.role !== 'admin') {
+    return error(res, { message: 'Acesso negado. Permissão de admin necessária.' }, 403);
+  }
+  next();
+};
+
+//Verifica se é operador
+
 const Permissions = {
   checkPermissionRead,
   checkPermissionWrite,
   checkPermissionDelete,
-  checkPermissionExport
+  checkPermissionExport,
+  requireAdmin
 };
 
 module.exports = Permissions;
