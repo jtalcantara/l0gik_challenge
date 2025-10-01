@@ -94,20 +94,52 @@ Authorization: Bearer <token>
 
 ## 📊 Banco de Dados
 
-O sistema utiliza arquivo JSON (`data/leads.json`) para armazenamento temporário.
+O sistema utiliza arquivos JSON separados para armazenamento temporário:
 
-### Estrutura do Banco
+- `data/leads.json` - Dados dos leads
+- `data/users.json` - Dados dos usuários
+- `data/rolePermissions.json` - Permissões por role
+
+### Estrutura dos Arquivos
+
+**data/leads.json:**
 ```json
 {
-  "leads": [...],
-  "users": [
-    {
-      "id": "1",
-      "username": "admin",
-      "password": "$2a$10$...",
-      "role": "admin"
-    }
-  ]
+  "leads": [...]
+}
+```
+
+**data/users.json:**
+```json
+[
+  {
+    "id": "1",
+    "username": "admin",
+    "password": "$2a$10$...",
+    "role": "admin"
+  }
+]
+```
+
+**data/rolePermissions.json:**
+```json
+{
+  "admin": {
+    "canRead": true,
+    "canWrite": true,
+    "canDelete": true,
+    "canExport": true,
+    "canViewAll": true,
+    "canManageUsers": true
+  },
+  "operador": {
+    "canRead": true,
+    "canWrite": false,
+    "canDelete": false,
+    "canExport": false,
+    "canViewAll": false,
+    "canManageUsers": false
+  }
 }
 ```
 
@@ -181,13 +213,15 @@ npm start
 
 ```
 server/
-├── routes/           # Rotas da API
+├── routes/          # Rotas da API
 │   ├── auth.js      # Autenticação
 │   └── leads.js     # CRUD de leads
-├── middleware/       # Middlewares
+├── middleware/      # Middlewares
 │   └── auth.js      # Autenticação JWT
-├── data/            # Banco JSON
-│   └── leads.json   # Dados
+├── data/                    # Banco JSON
+│   ├── leads.json           # Dados dos leads
+│   ├── users.json           # Dados dos usuários
+│   └── rolePermissions.json # Permissões dos usuarios
 ├── package.json     # Dependências
 ├── .gitignore       # Arquivos ignorados
 └── index.js         # Servidor principal

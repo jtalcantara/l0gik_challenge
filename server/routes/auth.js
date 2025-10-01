@@ -30,7 +30,6 @@ router.post('/login', validateSchema(loginSchema), async (req, res) => {
   return HttpResponses.success(res, {
     token,
     user: {
-      id: user.id,
       username: user.username,
       role: user.role
     }
@@ -61,7 +60,6 @@ router.post('/register', validateSchema(registerSchema), async (req, res) => {
   if (addUser(newUser)) {
     return HttpResponses.success(res, {
       user: {
-        id: newUser.id,
         username: newUser.username,
         role: newUser.role
       }

@@ -34,7 +34,7 @@ app.use('/api', routes);
 
 // Route Not Found
 app.use('*', (req, res) => {
-  HttpResponses.error(res, [new Error('Rota não encontrada')], 404);
+  HttpResponses.error(res, new Error('Rota não encontrada'), 404);
 });
 
 // Middleware de tratamento de erros (deve ser o último)
